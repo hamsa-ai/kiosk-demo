@@ -1,0 +1,15 @@
+pre-commit:
+    parallel: true
+    commands:
+        eslint:
+            tags: lint
+            glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+            run: npx @biomejs/biome lint --write {staged_files}
+        prettier:
+            tags: format
+            glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+            run: npx @biomejs/biome format --write {staged_files}
+commit-msg:
+    commands:
+        commitlint:
+            run: npx commitlint --edit {1}
