@@ -26,9 +26,7 @@ type potentiallyNull<T> = T | null;
 
 export const getMenuItemObject = (itemId: string): potentiallyNull<Item> => {
   for (const category of menuData.categories) {
-  console.log('category :', category);
     const item = category.items?.find((item) => item.id === itemId);
-    console.log('item :', item);
     if (item) return item;
     }
     return null;

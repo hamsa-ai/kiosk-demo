@@ -1,4 +1,4 @@
-import { menuData } from "../menuData"; // Assuming menuData is imported
+import { menuData } from "../menuData";
 import type { StateCreator } from "zustand";
 import type { ComboStep, Item } from "../types";
 
@@ -23,14 +23,25 @@ export const createComboSlice: StateCreator<ComboSlice> = (set, get) => ({
 
     // Start the combo order process
     startComboOrder: () => {
+        const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
+
+        if (!comboCategory || !comboCategory.steps || comboCategory.steps.length === 0) {
+            return null; // Return null if comboCategory or steps are undefined or empty
+        }
+
         set({ currentComboStep: 0 });
-        return menuData.categories.find(cat => cat.id === "combo_meal")?.steps[0] || null;
+        return comboCategory.steps[0] || null;
     },
 
     // Advance to the next step in the combo process
     nextComboStep: () => {
         const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
-        const steps = comboCategory?.steps || [];
+
+        if (!comboCategory || !comboCategory.steps) {
+            return null; // Return null if comboCategory or steps are undefined
+        }
+
+        const steps = comboCategory.steps;
         const currentStepIndex = get().currentComboStep;
 
         if (currentStepIndex === null || currentStepIndex >= steps.length - 1) {
@@ -44,10 +55,16 @@ export const createComboSlice: StateCreator<ComboSlice> = (set, get) => ({
 
     // Move back to the previous step in the combo process
     previousComboStep: () => {
+        const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
+
+        if (!comboCategory || !comboCategory.steps) {
+            return null; // Return null if comboCategory or steps are undefined
+        }
+
         const currentStepIndex = get().currentComboStep;
         if (currentStepIndex !== null && currentStepIndex > 0) {
             set({ currentComboStep: currentStepIndex - 1 });
-            return menuData.categories.find(cat => cat.id === "combo_meal")?.steps[currentStepIndex - 1] || null;
+            return comboCategory.steps[currentStepIndex - 1] || null;
         }
         return null;
     },
@@ -55,7 +72,12 @@ export const createComboSlice: StateCreator<ComboSlice> = (set, get) => ({
     // Skip the current step in the combo process
     skipComboStep: () => {
         const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
-        const steps = comboCategory?.steps || [];
+
+        if (!comboCategory || !comboCategory.steps) {
+            return null; // Return null if comboCategory or steps are undefined
+        }
+
+        const steps = comboCategory.steps;
         const currentStepIndex = get().currentComboStep;
 
         if (currentStepIndex === null || currentStepIndex >= steps.length - 1) {
@@ -75,21 +97,18 @@ export const createComboSlice: StateCreator<ComboSlice> = (set, get) => ({
     // Retrieve the items for the current combo step
     getItemsForCurrentStep: () => {
         const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
-        console.log('comboCategory :', comboCategory);
-        if (!comboCategory?.steps) {
-            return [];
+
+        if (!comboCategory || !comboCategory.steps) {
+            return []; // Return empty array if comboCategory or steps are undefined
         }
 
         const currentStepIndex = get().currentComboStep;
-        console.log('currentStepIndex :', currentStepIndex);
         if (currentStepIndex === null) {
-            return [];
+            return []; // Return empty array if no current step
         }
 
         const currentStep = comboCategory.steps[currentStepIndex];
-        console.log('currentStep :', currentStep);
         const stepCategory = menuData.categories.find(cat => cat.id === currentStep.id);
-        console.log('stepCategory :', stepCategory);
         return stepCategory?.items || [];
     },
 });

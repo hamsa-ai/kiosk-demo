@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { create } from "../__mocks__/zustand";
 import { createOrderSlice, type OrderSlice } from "../store/slices/orderSlice";
+import { getMenuItemObject } from "@/lib/utils";
 
 /**
  * Type definition for the test store, derived from the OrderSlice type.
@@ -22,6 +23,19 @@ const useOrderStore = create<TestStore>((...a) => ({
 const getUpdatedState = () => useOrderStore.getState();
 
 describe("OrderSlice", () => {
+	const burgerItem = getMenuItemObject("classic_burger") ||  {
+        id: "classic_burger",
+        name: "Classic Burger",
+        price: 5.99,
+        description: "Juicy beef patty with fresh lettuce, tomato, and our special sauce",
+      };
+	const friesItem = getMenuItemObject("regular_fries")||   {
+        id: "regular_fries",
+        name: "Regular Fries",
+        price: 2.49,
+        description: "Crispy golden fries",
+      };
+
 	/**
 	 * Scenario: Verifying Initial State
 	 * This test checks that the initial state of the order is an empty array.
@@ -37,13 +51,17 @@ describe("OrderSlice", () => {
 	 */
 	it("should add an item to the order", () => {
 		const state = getUpdatedState();
-		const item = { id: "burger", name: "Burger", price: 5.99, quantity: 1 };
 
-		state.addItemToOrder(item);
+		state.addItemToOrder(burgerItem.id, 1);
 
 		const updatedState = getUpdatedState();
 		expect(updatedState.currentOrder).toHaveLength(1);
-		expect(updatedState.currentOrder[0]).toEqual(item);
+		expect(updatedState.currentOrder[0]).toEqual({
+			id: burgerItem.id,
+			name: burgerItem.name,
+			price: burgerItem.price,
+			quantity: 1,
+		});
 	});
 
 	/**
@@ -53,23 +71,13 @@ describe("OrderSlice", () => {
 	it("should add multiple items to the order", () => {
 		const state = getUpdatedState();
 
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
-		state.addItemToOrder({
-			id: "fries",
-			name: "Fries",
-			price: 2.49,
-			quantity: 1,
-		});
+		state.addItemToOrder(burgerItem.id, 1);
+		state.addItemToOrder(friesItem.id, 1);
 
 		const updatedState = getUpdatedState();
 		expect(updatedState.currentOrder).toHaveLength(2);
-		expect(updatedState.currentOrder[0].name).toBe("Burger");
-		expect(updatedState.currentOrder[1].name).toBe("Fries");
+		expect(updatedState.currentOrder[0].name).toBe(burgerItem.name);
+		expect(updatedState.currentOrder[1].name).toBe(friesItem.name);
 	});
 
 	/**
@@ -79,18 +87,8 @@ describe("OrderSlice", () => {
 	it("should update the quantity of an existing item in the order", () => {
 		const state = getUpdatedState();
 
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
+		state.addItemToOrder(burgerItem.id, 1);
+		state.addItemToOrder(burgerItem.id, 1);
 
 		const updatedState = getUpdatedState();
 		expect(updatedState.currentOrder).toHaveLength(1);
@@ -103,12 +101,7 @@ describe("OrderSlice", () => {
 	 */
 	it("should reset order when canceled", () => {
 		const state = getUpdatedState();
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
+		state.addItemToOrder(burgerItem.id, 1);
 
 		state.cancelOrder();
 
@@ -123,22 +116,12 @@ describe("OrderSlice", () => {
 	it("should show order summary", () => {
 		const state = getUpdatedState();
 
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
-		state.addItemToOrder({
-			id: "fries",
-			name: "Fries",
-			price: 2.49,
-			quantity: 1,
-		});
+		state.addItemToOrder(burgerItem.id, 1);
+		state.addItemToOrder(friesItem.id, 1);
 
 		const summary = state.showOrderSummary();
 		expect(summary.items).toHaveLength(2);
-		expect(summary.total).toBe("8.48");
+		expect(summary.total).toBe("8.48"); // Assuming burger price is 5.99 and fries price is 2.49
 	});
 
 	/**
@@ -148,18 +131,8 @@ describe("OrderSlice", () => {
 	it("should complete the order", () => {
 		const state = getUpdatedState();
 
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
-		state.addItemToOrder({
-			id: "fries",
-			name: "Fries",
-			price: 2.49,
-			quantity: 1,
-		});
+		state.addItemToOrder(burgerItem.id, 1);
+		state.addItemToOrder(friesItem.id, 1);
 
 		const completedOrder = state.completeOrder();
 
@@ -192,18 +165,8 @@ describe("OrderSlice", () => {
 	it("should add items with different quantities", () => {
 		const state = getUpdatedState();
 
-		state.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 2,
-		});
-		state.addItemToOrder({
-			id: "fries",
-			name: "Fries",
-			price: 2.49,
-			quantity: 3,
-		});
+		state.addItemToOrder(burgerItem.id, 2);
+		state.addItemToOrder(friesItem.id, 3);
 
 		const updatedState = getUpdatedState();
 		expect(updatedState.currentOrder).toHaveLength(2);

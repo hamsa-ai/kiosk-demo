@@ -16,12 +16,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, title, discount }) => {
 	const isComboActive = currentComboStep !== null;
 
 	const handleAddItem = (item: Item) => {
-		addItemToOrder({
-			id: item.id,
-			name: item.name,
-			price: item.price,
-			quantity: 1,
-		});
+		addItemToOrder(item.id, 1);
 
 		if (isComboActive) {
 			nextComboStep();

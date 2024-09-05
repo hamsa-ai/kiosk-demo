@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { create } from "../__mocks__/zustand";
 import { createComboSlice, type ComboSlice } from "../store/slices/comboSlice";
 import { createOrderSlice, type OrderSlice } from "../store/slices/orderSlice";
-import { menuData } from "../store/menuData";
+import { getMenuItemObject } from "@/lib/utils";
 
 type TestStore = ComboSlice & OrderSlice;
 
@@ -13,6 +13,21 @@ const useKioskStore = create<TestStore>((...a) => ({
 
 // Utility function to get the updated state
 const getUpdatedState = () => useKioskStore.getState();
+
+// Helper function to get menu items with fallback
+const burgerItem = getMenuItemObject("classic_burger") || {
+	id: "classic_burger",
+	name: "Classic Burger",
+	price: 5.99,
+	description: "Juicy beef patty with fresh lettuce, tomato, and our special sauce",
+};
+
+const friesItem = getMenuItemObject("regular_fries") || {
+	id: "regular_fries",
+	name: "Regular Fries",
+	price: 2.49,
+	description: "Crispy golden fries",
+};
 
 describe("ComboSlice - Extended Scenarios", () => {
 	/**
@@ -27,7 +42,7 @@ describe("ComboSlice - Extended Scenarios", () => {
 		const updatedState = getUpdatedState();
 
 		expect(updatedState.currentComboStep).toBe(0); // Step 0 corresponds to the first step
-		expect(firstStep?.name).toBe(menuData.categories.find(c => c.id === 'combo_meal')?.steps[0].name); // First step should be from combo_meal category
+		expect(firstStep?.name).toBe("Sandwich"); // First step should be the first step in the combo
 	});
 
 	/**
@@ -41,18 +56,18 @@ describe("ComboSlice - Extended Scenarios", () => {
 		store.startComboOrder();
 
 		// Directly add items through selection
-		useKioskStore.getState().addItemToOrder({ id: "classic_burger", name: "Classic Burger", price: 5.99, quantity: 1 });
+		store.addItemToOrder(burgerItem.id, 1);
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "regular_fries", name: "Regular Fries", price: 2.49, quantity: 1 });
+		store.addItemToOrder(friesItem.id, 1);
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+		store.addItemToOrder("cola", 1);
 
 		const updatedState = getUpdatedState();
 
 		// Ensure the order contains the combo items
 		expect(updatedState.currentOrder).toHaveLength(3); // One combo with 3 items
-		expect(updatedState.currentOrder[0].name).toBe("Classic Burger");
-		expect(updatedState.currentOrder[1].name).toBe("Regular Fries");
+		expect(updatedState.currentOrder[0].name).toBe(burgerItem.name);
+		expect(updatedState.currentOrder[1].name).toBe(friesItem.name);
 		expect(updatedState.currentOrder[2].name).toBe("Cola");
 	});
 
@@ -69,7 +84,7 @@ describe("ComboSlice - Extended Scenarios", () => {
 		store.nextComboStep(); // Move to step 2
 
 		// Add final item and ensure combo completes
-		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+		store.addItemToOrder("cola", 1);
 		store.nextComboStep(); // Should complete
 
 		const updatedState = getUpdatedState();
@@ -91,7 +106,7 @@ describe("ComboSlice - Extended Scenarios", () => {
 		const updatedState = getUpdatedState();
 
 		expect(updatedState.currentComboStep).toBe(1); // Now at step 1 (Fries)
-		expect(skippedStep?.name).toBe(menuData.categories.find(c => c.id === 'combo_meal')?.steps[1].name); // Should move to Fries
+		expect(skippedStep?.name).toBe("Fries"); // Should move to Fries
 	});
 
 	/**
@@ -110,7 +125,7 @@ describe("ComboSlice - Extended Scenarios", () => {
 		const updatedState = getUpdatedState();
 
 		expect(updatedState.currentComboStep).toBe(0); // Should move back to step 0
-		expect(previousStep?.name).toBe(menuData.categories.find(c => c.id === 'combo_meal')?.steps[0].name); // Should move back to "Sandwich"
+		expect(previousStep?.name).toBe("Sandwich"); // Should move back to "Sandwich"
 	});
 
 	/**
@@ -142,22 +157,22 @@ describe("ComboSlice - Extended Scenarios", () => {
 
 		// Start the first combo and add items
 		store.startComboOrder();
-		useKioskStore.getState().addItemToOrder({ id: "classic_burger", name: "Classic Burger", price: 5.99, quantity: 1 });
+		useKioskStore.getState().addItemToOrder(burgerItem.id, 1);
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "regular_fries", name: "Regular Fries", price: 2.49, quantity: 1 });
+		useKioskStore.getState().addItemToOrder(friesItem.id, 1);
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+		useKioskStore.getState().addItemToOrder("cola", 1);
 
 		let updatedState = getUpdatedState();
 		expect(updatedState.currentOrder).toHaveLength(3); // One combo
 
 		// Start the second combo
 		store.startComboOrder();
-		useKioskStore.getState().addItemToOrder({ id: "grilled_chicken", name: "Grilled Chicken", price: 6.49, quantity: 1 });
+		useKioskStore.getState().addItemToOrder("grilled_chicken_sandwich", 1); 
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "curly_fries", name: "Curly Fries", price: 2.99, quantity: 1 });
+		useKioskStore.getState().addItemToOrder("curly_fries", 1); 
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "lemon_lime", name: "Lemon Lime", price: 1.99, quantity: 1 });
+		useKioskStore.getState().addItemToOrder("lemon_lime_soda", 1); 
 
 		updatedState = getUpdatedState();
 		expect(updatedState.currentOrder).toHaveLength(6); // Two combos (3 items each)
@@ -172,11 +187,11 @@ describe("ComboSlice - Extended Scenarios", () => {
 
 		// Start and complete the first combo
 		store.startComboOrder();
-		useKioskStore.getState().addItemToOrder({ id: "classic_burger", name: "Classic Burger", price: 5.99, quantity: 1 });
+		store.addItemToOrder(burgerItem.id, 1);
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "regular_fries", name: "Regular Fries", price: 2.49, quantity: 1 });
+		store.addItemToOrder(friesItem.id, 1);
 		store.nextComboStep();
-		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+		store.addItemToOrder("cola", 1);
 		store.nextComboStep(); // Complete the combo
 
 		// Reset the combo process
@@ -198,10 +213,10 @@ describe("ComboSlice - Extended Scenarios", () => {
 		store.startComboOrder();
 
 		// Try to navigate to a step with an invalid category
-		const invalidStep = menuData.categories.find(c => c.id === 'invalid_category_id');
+		const invalidStep = getMenuItemObject("invalid_category_id");
 		const updatedState = getUpdatedState();
 
-		expect(invalidStep).toBeUndefined(); // Invalid category should not exist
+		expect(invalidStep).toBeNull(); // Invalid category should not exist
 		expect(updatedState.currentComboStep).toBe(0); // State should remain unchanged
 	});
 });
