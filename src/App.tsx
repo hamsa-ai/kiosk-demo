@@ -1,87 +1,108 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import biomeLogo from "./assets/biome.svg";
-import tailwindLogo from "./assets/tailwind.svg";
-import viteLogo from "/vite.svg";
+import MainLayout from "./layouts/MainLayout";
+import "unfonts.css";
 import "./store/kioskStore";
 
+import { HamsaVoiceAgent } from "@hamsa-ai/voice-agents-sdk";
+import { agentTools } from "./voice-agent/agent-tools";
+
+const AGENT_ID = "20664578-ba51-4362-b782-46f785344519";
+const agent = new HamsaVoiceAgent("8295c84d-195c-4057-9eb6-e9d42f923538");
+
+const agentParams = {
+	agentId: AGENT_ID,
+	voiceEnablement: true,
+	tools: agentTools.slice(0, 4),
+	params: {
+		our_menu: `
+
+### Categories and Items:
+
+**Combo Meal** (categoryId: combo_meal)
+- No items listed
+
+**Sandwiches** (categoryId: sandwich)
+- Classic Burger (itemId: classic_burger)
+- Grilled Chicken Sandwich (itemId: grilled_chicken_sandwich)
+- Bacon Burger (itemId: bacon_burger)
+- BBQ Chicken Sandwich (itemId: bbq_chicken_sandwich)
+- Veggie Burger (itemId: veggie_burger)
+- Turkey Sandwich (itemId: turkey_sandwich)
+
+**Chicken** (categoryId: chicken)
+- Crispy Chicken Tenders (itemId: crispy_chicken_tenders)
+- Spicy Chicken Wings (itemId: spicy_chicken_wings)
+- Grilled Chicken Breast (itemId: grilled_chicken_breast)
+- BBQ Chicken Legs (itemId: bbq_chicken_legs)
+- Fried Chicken Bucket (itemId: fried_chicken_bucket)
+- Popcorn Chicken (itemId: popcorn_chicken)
+
+**Drinks** (categoryId: drinks)
+- Cola (itemId: cola)
+- Lemon-Lime Soda (itemId: lemon_lime_soda)
+
+**Fries** (categoryId: fries)
+- Regular Fries (itemId: regular_fries)
+- Curly Fries (itemId: curly_fries)
+- Waffle Fries (itemId: waffle_fries)
+- Sweet Potato Fries (itemId: sweet_potato_fries)
+- Loaded Fries (itemId: loaded_fries)
+- Garlic Parmesan Fries (itemId: garlic_parmesan_fries)
+
+**Sauce** (itemId: sauce)
+- Ketchup (itemId: ketchup)
+- Mayonnaise (itemId: mayo)
+- BBQ Sauce (itemId: bbq_sauce)
+- Ranch Sauce (itemId: ranch_sauce)
+- Honey Mustard (itemId: honey_mustard)
+- Spicy Sriracha (itemId: spicy_sriracha)
+`,
+	},
+};
+
 function App() {
-	const [count, setCount] = useState(0);
+	const [isAgentRunning, setIsAgentRunning] = useState(false);
+
+	const handleStartAgent = () => {
+		try {
+			agent.start(agentParams);
+			setIsAgentRunning(true);
+			console.log("Agent started successfully");
+		} catch (error) {
+			console.error("Failed to start agent:", error);
+		}
+	};
+
+	const handleEndAgent = () => {
+		try {
+			agent.end();
+			setIsAgentRunning(false);
+			console.log("Agent paused successfully");
+		} catch (error) {
+			console.error("Failed to end agent:", error);
+		}
+	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center bg-zinc-800 font-normal text-white leading-6 text-opacity-90'>
-			<div className='m-0 flex min-w-[320px] max-w-screen-xl flex-col place-items-center justify-between p-8 text-center'>
-				<div className='flex flex-row justify-center'>
-					<a
-						href='https://vitejs.dev'
-						target='_blank'
-						rel='noreferrer'
-						className='font-medium'
-					>
-						<img
-							src={viteLogo}
-							alt='Vite logo'
-							className='h-32 p-6 transition-all duration-300 ease-in-out hover:scale-110 hover:drop-shadow-2xl hover:filter'
-						/>
-					</a>
-					<a
-						href='https://react.dev'
-						target='_blank'
-						rel='noreferrer'
-						className='font-medium'
-					>
-						<img
-							src={reactLogo}
-							alt='React logo'
-							className='h-32 p-6 transition-all duration-300 ease-in-out hover:scale-110 hover:drop-shadow-2xl hover:filter'
-						/>
-					</a>
-					<a
-						href='https://biomejs.dev/'
-						target='_blank'
-						rel='noreferrer'
-						className='font-medium'
-					>
-						<img
-							src={biomeLogo}
-							alt='Biome logo'
-							className='h-32 p-6 transition-all duration-300 ease-in-out hover:scale-110 hover:drop-shadow-2xl hover:filter'
-						/>
-					</a>
-					<a
-						href='https://tailwindcss.com/'
-						target='_blank'
-						rel='noreferrer'
-						className='font-medium'
-					>
-						<img
-							src={tailwindLogo}
-							alt='TailwindCSS logo'
-							className='h-32 p-6 transition-all duration-300 ease-in-out hover:scale-110 hover:drop-shadow-2xl hover:filter'
-						/>
-					</a>
-				</div>
-				<h1 className='p-8 font-bold text-5xl'>
-					Vite + React + Biome + Tailwind
-				</h1>
-				<div className='p-8'>
-					<button
-						onClick={() => setCount((count) => count + 1)}
-						type='button'
-						className='cursor-pointer rounded-md border border-transparent bg-gray-900 px-3 py-2 font-medium text-base transition-colors duration-200 hover:border-indigo-500'
-					>
-						count is {count}
-					</button>
-					<p className='p-6'>
-						Edit <code>src/App.tsx</code> and save to test HMR
-					</p>
-				</div>
-				<p className='text-gray-400'>
-					Click on the Vite, React, Biome and Tailwind logos to learn
-					more
-				</p>
+		<>
+			<MainLayout />
+			<div className='flex justify-center items-center gap-6'>
+				<button
+					onClick={handleStartAgent}
+					disabled={isAgentRunning}
+					className={isAgentRunning ? "disabled-button" : ""}
+				>
+					Start Agent
+				</button>
+				<button
+					onClick={handleEndAgent}
+					disabled={!isAgentRunning}
+					className={!isAgentRunning ? "disabled-button" : ""}
+				>
+					Pause Agent
+				</button>
 			</div>
-		</div>
+		</>
 	);
 }
 

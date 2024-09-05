@@ -1,130 +1,207 @@
 import { describe, it, expect } from "vitest";
 import { create } from "../__mocks__/zustand";
 import { createComboSlice, type ComboSlice } from "../store/slices/comboSlice";
-import { menuData } from "../store/menuData"; // Assuming menuData is imported for reference
+import { createOrderSlice, type OrderSlice } from "../store/slices/orderSlice";
+import { menuData } from "../store/menuData";
 
-type TestStore = ComboSlice;
+type TestStore = ComboSlice & OrderSlice;
 
-const useComboStore = create<TestStore>((...a) => ({
+const useKioskStore = create<TestStore>((...a) => ({
 	...createComboSlice(...a),
+	...createOrderSlice(...a),
 }));
 
 // Utility function to get the updated state
-const getUpdatedState = () => useComboStore.getState();
+const getUpdatedState = () => useKioskStore.getState();
 
-describe("ComboSlice", () => {
+describe("ComboSlice - Extended Scenarios", () => {
 	/**
-	 * Scenario: Starting a Combo Order
+	 * Scenario 1: Starting a Combo Order
 	 * This test verifies that a combo order starts at step 0 and the first step is correctly identified.
 	 */
 	it("should start a combo order at step 0", () => {
 		const store = getUpdatedState();
 
 		// Start combo order
-		const firstStep = store.startComboOrder("burger_combo");
+		const firstStep = store.startComboOrder();
 		const updatedState = getUpdatedState();
 
 		expect(updatedState.currentComboStep).toBe(0); // Step 0 corresponds to the first step
-		expect(firstStep?.name).toBe("Sandwich");
+		expect(firstStep?.name).toBe(menuData.categories.find(c => c.id === 'combo_meal')?.steps[0].name); // First step should be from combo_meal category
 	});
 
 	/**
-	 * Scenario: Moving to the Next Combo Step
-	 * This test checks the transition from step 0 to step 1 in the combo order process.
+	 * Scenario 2: Selecting Combo Items and Directly Adding to Order
+	 * Ensures that selecting combo items directly adds them to the order.
 	 */
-	it("should move to the next combo step (from step 0 to step 1)", () => {
+	it("should add items directly to the order during combo steps", () => {
 		const store = getUpdatedState();
 
 		// Start combo order
-		store.startComboOrder("burger_combo");
+		store.startComboOrder();
 
-		// Move to the next step
-		const secondStep = store.nextComboStep();
+		// Directly add items through selection
+		useKioskStore.getState().addItemToOrder({ id: "classic_burger", name: "Classic Burger", price: 5.99, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "regular_fries", name: "Regular Fries", price: 2.49, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+
 		const updatedState = getUpdatedState();
 
-		expect(updatedState.currentComboStep).toBe(1); // Now at step 1
-		expect(secondStep?.name).toBe("Fries");
+		// Ensure the order contains the combo items
+		expect(updatedState.currentOrder).toHaveLength(3); // One combo with 3 items
+		expect(updatedState.currentOrder[0].name).toBe("Classic Burger");
+		expect(updatedState.currentOrder[1].name).toBe("Regular Fries");
+		expect(updatedState.currentOrder[2].name).toBe("Cola");
 	});
 
 	/**
-	 * Scenario: Completing a Combo Order
-	 * This test ensures that after all steps are completed, the combo order is correctly marked as completed.
+	 * Scenario 3: Completing the Combo Order
+	 * Test ensures that the combo process completes correctly when the final step is reached.
 	 */
-	it("should complete the combo order after all steps", () => {
+	it("should complete the combo order after final step", () => {
+		const store = getUpdatedState();
+
+		// Start combo order and navigate through steps
+		store.startComboOrder();
+		store.nextComboStep(); // Move to step 1
+		store.nextComboStep(); // Move to step 2
+
+		// Add final item and ensure combo completes
+		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+		store.nextComboStep(); // Should complete
+
+		const updatedState = getUpdatedState();
+		expect(updatedState.currentComboStep).toBeNull(); // Combo should be completed
+	});
+
+	/**
+	 * Scenario 4: Skipping a Step in Combo
+	 * Verifies that skipping a step correctly advances to the next.
+	 */
+	it("should skip a combo step", () => {
 		const store = getUpdatedState();
 
 		// Start combo order
-		store.startComboOrder("burger_combo");
+		store.startComboOrder();
 
-		// Move through all steps
-		store.nextComboStep(); // Move to step 1
-		store.nextComboStep(); // Move to step 2 (last step)
-		const updatedStateAfterLastStep = getUpdatedState();
-
-		expect(updatedStateAfterLastStep.currentComboStep).toBe(2); // Final step before completion
-
-		// Move to complete the combo
-		const thirdStep = store.nextComboStep(); // Should complete
-		const finalState = getUpdatedState();
-
-		expect(finalState.currentComboStep).toBeNull(); // Combo should be completed
-		expect(thirdStep).toBeNull(); // No more steps
-	});
-
-	/**
-	 * Scenario: Starting a Combo Order for a Different Combo
-	 * This test verifies that starting a different combo order correctly resets the combo step and returns the first step.
-	 */
-	it("should start a different combo order and reset the combo step", () => {
-		const store = getUpdatedState();
-
-		// Start the first combo order
-		store.startComboOrder("burger_combo");
-		store.nextComboStep(); // Move to step 1
-
-		// Start a different combo order
-		const firstStepChickenCombo = store.startComboOrder("chicken_combo");
+		// Skip the first step (Sandwich)
+		const skippedStep = store.skipComboStep();
 		const updatedState = getUpdatedState();
 
-		expect(updatedState.currentComboStep).toBe(0); // Reset to step 0
-		expect(firstStepChickenCombo?.name).toBe("Sandwich");
+		expect(updatedState.currentComboStep).toBe(1); // Now at step 1 (Fries)
+		expect(skippedStep?.name).toBe(menuData.categories.find(c => c.id === 'combo_meal')?.steps[1].name); // Should move to Fries
 	});
 
 	/**
-	 * Scenario: Handling Invalid Combo ID
-	 * This test ensures that providing an invalid combo ID does not update the state and returns null.
+	 * Scenario 5: Going Back a Step
+	 * Verifies that going back a step works as expected.
 	 */
-	it("should return null and not change state if combo ID is invalid", () => {
+	it("should go back to the previous step", () => {
 		const store = getUpdatedState();
 
-		// Attempt to start an invalid combo order
-		const invalidCombo = store.startComboOrder("invalid_combo_id");
+		// Start combo order and move to step 1
+		store.startComboOrder();
+		store.nextComboStep(); // Move to step 1
+
+		// Go back to the previous step
+		const previousStep = store.previousComboStep();
 		const updatedState = getUpdatedState();
 
-		expect(invalidCombo).toBeNull(); // Invalid combo should return null
-		expect(updatedState.currentComboStep).toBeNull(); // State should not change
+		expect(updatedState.currentComboStep).toBe(0); // Should move back to step 0
+		expect(previousStep?.name).toBe(menuData.categories.find(c => c.id === 'combo_meal')?.steps[0].name); // Should move back to "Sandwich"
 	});
 
 	/**
-	 * Scenario: Attempting to Move Beyond the Final Step
-	 * This test verifies that attempting to move beyond the final combo step does not cause errors and correctly keeps the state.
+	 * Scenario 6: Attempting to Move Beyond Final Step
+	 * Verifies that moving beyond the final step does not update the state and keeps the combo complete.
 	 */
-	it("should not move beyond the final combo step", () => {
+	it("should not move beyond the final step", () => {
+		const store = getUpdatedState();
+
+		// Start combo order and complete all steps
+		store.startComboOrder();
+		store.nextComboStep(); // Step 1
+		store.nextComboStep(); // Step 2 (Final)
+		store.nextComboStep(); // Complete the combo
+
+		const finalStep = store.nextComboStep(); // Attempt to move beyond final step
+		const updatedState = getUpdatedState();
+
+		expect(updatedState.currentComboStep).toBeNull(); // Combo should remain complete
+		expect(finalStep).toBeNull(); // No further steps available
+	});
+
+	/**
+	 * Scenario 7: Starting Multiple Combos in Sequence
+	 * Tests that multiple combos can be started and each is tracked independently in the order.
+	 */
+	it("should handle multiple combo orders in sequence", () => {
+		const store = getUpdatedState();
+
+		// Start the first combo and add items
+		store.startComboOrder();
+		useKioskStore.getState().addItemToOrder({ id: "classic_burger", name: "Classic Burger", price: 5.99, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "regular_fries", name: "Regular Fries", price: 2.49, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+
+		let updatedState = getUpdatedState();
+		expect(updatedState.currentOrder).toHaveLength(3); // One combo
+
+		// Start the second combo
+		store.startComboOrder();
+		useKioskStore.getState().addItemToOrder({ id: "grilled_chicken", name: "Grilled Chicken", price: 6.49, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "curly_fries", name: "Curly Fries", price: 2.99, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "lemon_lime", name: "Lemon Lime", price: 1.99, quantity: 1 });
+
+		updatedState = getUpdatedState();
+		expect(updatedState.currentOrder).toHaveLength(6); // Two combos (3 items each)
+	});
+
+	/**
+	 * Scenario 8: Resetting Combo After Completion
+	 * Verifies that resetting the combo works properly after completing one.
+	 */
+	it("should reset the combo process after completion", () => {
+		const store = getUpdatedState();
+
+		// Start and complete the first combo
+		store.startComboOrder();
+		useKioskStore.getState().addItemToOrder({ id: "classic_burger", name: "Classic Burger", price: 5.99, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "regular_fries", name: "Regular Fries", price: 2.49, quantity: 1 });
+		store.nextComboStep();
+		useKioskStore.getState().addItemToOrder({ id: "cola", name: "Cola", price: 1.99, quantity: 1 });
+		store.nextComboStep(); // Complete the combo
+
+		// Reset the combo process
+		store.resetCombo();
+
+		const updatedState = getUpdatedState();
+		expect(updatedState.currentComboStep).toBeNull(); // Combo process should be reset
+		expect(updatedState.currentOrder).toHaveLength(3); // Ensure previous combo items remain in order
+	});
+
+	/**
+	 * Scenario 9: Invalid Category for Combo Step
+	 * Verifies that an invalid category ID does not break the process.
+	 */
+	it("should handle invalid category selection gracefully", () => {
 		const store = getUpdatedState();
 
 		// Start combo order
-		store.startComboOrder("burger_combo");
+		store.startComboOrder();
 
-		// Move through all steps
-		store.nextComboStep(); // Move to step 1
-		store.nextComboStep(); // Move to step 2 (last step)
-		store.nextComboStep(); // Move to complete the combo
+		// Try to navigate to a step with an invalid category
+		const invalidStep = menuData.categories.find(c => c.id === 'invalid_category_id');
+		const updatedState = getUpdatedState();
 
-		// Attempt to move beyond the final step
-		const invalidStep = store.nextComboStep();
-		const finalState = getUpdatedState();
-
-		expect(finalState.currentComboStep).toBeNull(); // Should remain null after completion
-		expect(invalidStep).toBeNull(); // No further steps should be available
+		expect(invalidStep).toBeUndefined(); // Invalid category should not exist
+		expect(updatedState.currentComboStep).toBe(0); // State should remain unchanged
 	});
 });

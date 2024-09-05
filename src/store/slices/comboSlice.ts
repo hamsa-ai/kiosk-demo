@@ -1,145 +1,95 @@
+import { menuData } from "../menuData"; // Assuming menuData is imported
 import type { StateCreator } from "zustand";
-import type { ComboStep } from "../types";
-import { menuData } from "../menuData";
+import type { ComboStep, Item } from "../types";
 
 /**
  * Interface representing the slice of state related to combo meal management.
- * It contains the current step in the combo process and methods to manage the flow of combo meal selection.
  */
 export interface ComboSlice {
-	currentComboStep: number | null;
-	startComboOrder: (comboId: string) => ComboStep | null;
-	nextComboStep: () => ComboStep | null;
-	previousComboStep: () => ComboStep | null;
-	skipComboStep: () => ComboStep | null;
+    currentComboStep: number | null;
+    startComboOrder: () => ComboStep | null;
+    nextComboStep: () => ComboStep | null;
+    previousComboStep: () => ComboStep | null;
+    skipComboStep: () => ComboStep | null;
+    resetCombo: () => void;
+    getItemsForCurrentStep: () => Item[];
 }
 
 /**
  * Creates a Zustand slice for managing combo meal selections.
- *
- * @param set - Zustand's set function to update the state.
- * @param get - Zustand's get function to retrieve the current state.
- * @returns The ComboSlice containing the state and actions for combo meal management.
  */
 export const createComboSlice: StateCreator<ComboSlice> = (set, get) => ({
-	currentComboStep: null,
+    currentComboStep: null,
 
-	/**
-	 * Starts a combo order by selecting the first step of the combo process.
-	 *
-	 * @param comboId - The ID of the selected combo meal.
-	 * @returns The first ComboStep or null if the combo is not found.
-	 */
-	startComboOrder: (comboId) => {
-		const comboCategory = menuData.categories.find(
-			(cat) => cat.id === "combo_meal"
-		);
+    // Start the combo order process
+    startComboOrder: () => {
+        set({ currentComboStep: 0 });
+        return menuData.categories.find(cat => cat.id === "combo_meal")?.steps[0] || null;
+    },
 
-		if (!comboCategory?.steps) {
-			return null;
-		}
+    // Advance to the next step in the combo process
+    nextComboStep: () => {
+        const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
+        const steps = comboCategory?.steps || [];
+        const currentStepIndex = get().currentComboStep;
 
-		const combo = comboCategory.items.find((item) => item.id === comboId);
+        if (currentStepIndex === null || currentStepIndex >= steps.length - 1) {
+            set({ currentComboStep: null });
+            return null;
+        }
 
-		if (!combo) {
-			return null;
-		}
+        set({ currentComboStep: currentStepIndex + 1 });
+        return steps[currentStepIndex + 1] || null;
+    },
 
-		set({ currentComboStep: 0 });
+    // Move back to the previous step in the combo process
+    previousComboStep: () => {
+        const currentStepIndex = get().currentComboStep;
+        if (currentStepIndex !== null && currentStepIndex > 0) {
+            set({ currentComboStep: currentStepIndex - 1 });
+            return menuData.categories.find(cat => cat.id === "combo_meal")?.steps[currentStepIndex - 1] || null;
+        }
+        return null;
+    },
 
-		console.log(`Started combo order: ${combo.name}`);
-		return comboCategory.steps[0];
-	},
+    // Skip the current step in the combo process
+    skipComboStep: () => {
+        const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
+        const steps = comboCategory?.steps || [];
+        const currentStepIndex = get().currentComboStep;
 
-	/**
-	 * Advances to the next step in the combo meal selection process.
-	 * If the current step is the last step, it completes the combo order.
-	 *
-	 * @returns The next ComboStep or null if the combo meal selection is complete.
-	 */
-	nextComboStep: () => {
-		const comboCategory = menuData.categories.find(
-			(cat) => cat.id === "combo_meal"
-		);
+        if (currentStepIndex === null || currentStepIndex >= steps.length - 1) {
+            set({ currentComboStep: null });
+            return null;
+        }
 
-		const steps = comboCategory?.steps || [];
+        set({ currentComboStep: currentStepIndex + 1 });
+        return steps[currentStepIndex + 1] || null;
+    },
 
-		if (!steps.length) {
-			return null;
-		}
+    // Reset the combo process
+    resetCombo: () => {
+        set({ currentComboStep: null });
+    },
 
-		const currentStepIndex = get().currentComboStep;
+    // Retrieve the items for the current combo step
+    getItemsForCurrentStep: () => {
+        const comboCategory = menuData.categories.find(cat => cat.id === "combo_meal");
+        console.log('comboCategory :', comboCategory);
+        if (!comboCategory?.steps) {
+            return [];
+        }
 
-		if (currentStepIndex === null || currentStepIndex >= steps.length - 1) {
-			// Already at the final step, or no steps left
-			console.log("Combo meal selection complete");
-			set({ currentComboStep: null });
-			return null;
-		}
+        const currentStepIndex = get().currentComboStep;
+        console.log('currentStepIndex :', currentStepIndex);
+        if (currentStepIndex === null) {
+            return [];
+        }
 
-		// Move to the next step
-		const nextStep = currentStepIndex + 1;
-		set({ currentComboStep: nextStep });
-		console.log(`Moving to next combo step: ${steps[nextStep].name}`);
-		return steps[nextStep];
-	},
-
-	/**
-	 * Moves back to the previous step in the combo meal selection process.
-	 * If the current step is the first step, it remains at the first step.
-	 *
-	 * @returns The previous ComboStep or null if the current step is the first step.
-	 */
-	previousComboStep: () => {
-		const comboCategory = menuData.categories.find(
-			(cat) => cat.id === "combo_meal"
-		);
-
-		if (!comboCategory?.steps) {
-			return null;
-		}
-
-		const currentStepIndex = get().currentComboStep;
-
-		if (currentStepIndex !== null && currentStepIndex > 0) {
-			const prevStep = currentStepIndex - 1;
-			set({ currentComboStep: prevStep });
-			console.log("Moving back to previous combo step");
-			return comboCategory.steps[prevStep];
-		}
-
-		return null;
-	},
-
-	/**
-	 * Skips the current step in the combo meal selection process and moves to the next step.
-	 * If the current step is the last step, it completes the combo order.
-	 *
-	 * @returns The next ComboStep or null if the combo meal selection is complete.
-	 */
-	skipComboStep: () => {
-		const comboCategory = menuData.categories.find(
-			(category) => category.id === "combo_meal"
-		);
-
-		if (!comboCategory?.steps) {
-			return null;
-		}
-
-		const steps = comboCategory?.steps || [];
-		const currentStepIndex = get().currentComboStep;
-
-		if (currentStepIndex === null || currentStepIndex >= steps.length - 1) {
-			// Already at the final step, or no steps left
-			console.log("Combo meal selection complete");
-			set({ currentComboStep: null });
-			return null;
-		}
-
-		// Skip to the next step
-		const nextStep = currentStepIndex + 1;
-		set({ currentComboStep: nextStep });
-		console.log("Skipping current combo step");
-		return steps[nextStep];
-	},
+        const currentStep = comboCategory.steps[currentStepIndex];
+        console.log('currentStep :', currentStep);
+        const stepCategory = menuData.categories.find(cat => cat.id === currentStep.id);
+        console.log('stepCategory :', stepCategory);
+        return stepCategory?.items || [];
+    },
 });

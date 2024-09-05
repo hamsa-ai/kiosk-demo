@@ -1,3 +1,4 @@
+import { getMenuItemObject } from "@/lib/utils";
 import type { StateCreator } from "zustand";
 
 /**
@@ -15,13 +16,56 @@ export interface OrderItem {
  */
 export interface OrderSlice {
 	currentOrder: OrderItem[];
-	addItemToOrder: (item: OrderItem) => void;
-	editItemInOrder: (itemId: string, newDetails: Partial<OrderItem>) => void;
+	isCompleted: boolean;
+	
+	/**
+	 * Adds an item to the current order.
+	 *
+	 * @param itemId - The ID of the item to add.
+	 * @param quantity - The quantity of the item to add.
+	 */
+	addItemToOrder: (itemId: string, quantity: number) => void;
+
+	/**
+	 * Edits the quantity of an existing item in the order.
+	 *
+	 * @param itemId - The ID of the item to edit.
+	 * @param quantity - The new quantity to set.
+	 */
+	editItemInOrder: (itemId: string, quantity: number) => void;
+
+	/**
+	 * Removes an item from the current order by its ID.
+	 *
+	 * @param itemId - The ID of the item to remove.
+	 */
 	removeItemFromOrder: (itemId: string) => void;
+
+	/**
+	 * Generates a summary of the current order, including the total price.
+	 *
+	 * @returns An object containing the items in the current order and the total price.
+	 */
 	showOrderSummary: () => { items: OrderItem[]; total: string };
+
+	/**
+	 * Completes the current order, sets the isCompleted flag, and resets the order state.
+	 *
+	 * @returns An object containing the items in the completed order and the total price.
+	 */
 	completeOrder: () => { items: OrderItem[]; total: string };
+
+	/**
+	 * Cancels the current order and resets the order state.
+	 */
 	cancelOrder: () => void;
+
+	/**
+	 * Resets the order and sets isCompleted to false.
+	 */
+	resetOrder: () => void;
 }
+
 
 /**
  * Creates a Zustand slice for managing the current order.
@@ -32,41 +76,61 @@ export interface OrderSlice {
  */
 export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
 	currentOrder: [],
+	isCompleted: false,
 
 	/**
 	 * Adds an item to the current order. If the item already exists in the order, it updates the quantity.
 	 *
-	 * @param item - The OrderItem to add or update in the order.
+	 * @param itemId - The ID of the item to add.
+	 * @param quantity - The quantity to add.
 	 */
-	addItemToOrder: (item) => {
+	addItemToOrder: (itemId: string, quantity: number) => {
+		const item = getMenuItemObject(itemId);
+		if (!item) {
+			console.log(`Item with id ${itemId} not found.`);
+			return;
+		}
+
 		set((state) => {
 			const existingItemIndex = state.currentOrder.findIndex(
-				(orderItem) => orderItem.id === item.id
+				(orderItem) => orderItem.id === itemId
 			);
 
 			if (existingItemIndex !== -1) {
 				// Update quantity if item already exists
 				const updatedOrder = [...state.currentOrder];
-				updatedOrder[existingItemIndex].quantity += item.quantity;
+				updatedOrder[existingItemIndex].quantity += quantity;
 				return { currentOrder: updatedOrder };
 			}
 
 			// Add new item if it doesn't exist in the order
-			return { currentOrder: [...state.currentOrder, item] };
+			const newOrderItem: OrderItem = {
+				id: item.id,
+				name: item.name,
+				price: item.price,
+				quantity,
+			};
+			return { currentOrder: [...state.currentOrder, newOrderItem] };
 		});
-		console.log(`Added to order: ${item.quantity}x ${item.name}`);
+		console.log(`Added to order: ${quantity}x ${item.name}`);
 	},
 
 	/**
-	 * Edits the details of an existing item in the order.
+	 * Edits the quantity of an existing item in the order.
 	 *
 	 * @param itemId - The ID of the item to edit.
-	 * @param newDetails - The new details to update for the item.
+	 * @param quantity - The new quantity to set.
 	 */
-	editItemInOrder: (itemId, newDetails) => {
+	editItemInOrder: (itemId: string, quantity: number) => {
+		const item = getMenuItemObject(itemId);
+		if (!item) {
+			console.log(`Item with id ${itemId} not found.`);
+			return;
+		}
+
 		set((state) => ({
-			currentOrder: state.currentOrder.map((item) =>
-				item.id === itemId ? { ...item, ...newDetails } : item
+			currentOrder: state.currentOrder.map((orderItem) =>
+				orderItem.id === itemId ? { ...orderItem, quantity } : orderItem
 			),
 		}));
 		console.log(`Edited item in order: ${itemId}`);
@@ -104,14 +168,14 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
 	},
 
 	/**
-	 * Completes the current order and resets the order state.
+	 * Completes the current order, sets the isCompleted flag, and resets the order state.
 	 *
 	 * @returns An object containing the items in the completed order and the total price.
 	 */
 	completeOrder: () => {
 		const orderSummary = get().showOrderSummary();
 		console.log("Order completed!");
-		set({ currentOrder: [] });
+		set({ isCompleted: true, currentOrder: [] });
 		return orderSummary;
 	},
 
@@ -121,5 +185,13 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
 	cancelOrder: () => {
 		set({ currentOrder: [] });
 		console.log("Order cancelled.");
+	},
+
+	/**
+	 * Resets the order and sets isCompleted to false.
+	 */
+	resetOrder: () => {
+		set({ currentOrder: [], isCompleted: false });
+		console.log("Order reset.");
 	},
 });
