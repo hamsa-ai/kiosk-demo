@@ -1,33 +1,33 @@
-import React from "react";
+import type React from "react";
 import { useKioskStore } from "@/store/kioskStore";
+import DeliciousLogo from "../DeliciousLogo";
+import useVoiceAgent from "@/voice-agent/useVoiceAgent";
 
 const OrderCompletionScreen: React.FC = () => {
-	const resetOrder = useKioskStore((state) => state.resetOrder);
-	const { removeCategory } = useKioskStore((state) => ({
-		removeCategory: state.removeCategory,
-	}));
+  const { startAgent } = useVoiceAgent();
+  const resetOrder = useKioskStore((state) => state.resetOrder);
+  const { removeCategory } = useKioskStore((state) => ({
+    removeCategory: state.removeCategory,
+  }));
 
-	const handleNewOrderClick = () => {
-		resetOrder(); // Resets the order and isCompleted flag
-		removeCategory();
-	};
+  const handleNewOrderClick = () => {
+    resetOrder(); // Resets the order and isCompleted flag
+    removeCategory();
+    startAgent();
+  };
 
-	return (
-		<div className='flex flex-col items-center justify-center h-full bg-white z-20'>
-			<h1 className='text-2xl font-bold mb-4'>
-				Your order is being prepared!
-			</h1>
-			<p className='text-lg mb-6'>
-				Thank you for your order. We are working on it!
-			</p>
-			<button
-				className='bg-green-500 text-white py-2 px-6 rounded-lg font-bold'
-				onClick={handleNewOrderClick}
-			>
-				New Order
-			</button>
-		</div>
-	);
+  return (
+    <div className="relative flex h-full flex-col items-start justify-between overflow-hidden bg-white p-8">
+      <DeliciousLogo className="w-[147.66px]" />
+      <button
+        className="relative z-[40] ml-auto rounded-[58.98px] bg-limeGreen2 px-6 py-2 font-baloo2 font-semibold text-black"
+        type="button"
+        onClick={handleNewOrderClick}
+      >
+        New Order?
+      </button>
+    </div>
+  );
 };
 
 export default OrderCompletionScreen;

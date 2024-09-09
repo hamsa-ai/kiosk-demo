@@ -2,11 +2,11 @@ import type { Category } from "./types";
 import comboMealImage from "@assets/images/comboMeal.png";
 
 // TODO: UPDATE ALL THE IMAGES BELOW
-// import sandwichImage from "@assets/images/sandwich.png";
-// import chickenImage from "@assets/images/chicken.png";
-// import drinksImage from "@assets/images/drinks.png";
-// import friesImage from "@assets/images/fries.png";
-// import sauceImage from "@assets/images/sauce.png";
+import sandwichImage from "@assets/images/sandwich.png";
+import chickenImage from "@assets/images/chicken.png";
+import drinksImage from "@assets/images/drinks.png";
+import friesImage from "@assets/images/fries.png";
+import sauceImage from "@assets/images/sauce.png";
 // import burgerComboImage from "@assets/images/burgerCombo.png";
 // import chickenComboImage from "@assets/images/chickenCombo.png";
 // import classicBurgerImage from "@assets/images/classicBurger.png";
@@ -20,11 +20,6 @@ import comboMealImage from "@assets/images/comboMeal.png";
 // import ketchupImage from "@assets/images/ketchup.png";
 // import mayoImage from "@assets/images/mayo.png";
 
-import sandwichImage from "@assets/images/comboMeal.png";
-import chickenImage from "@assets/images/comboMeal.png";
-import drinksImage from "@assets/images/comboMeal.png";
-import friesImage from "@assets/images/comboMeal.png";
-import sauceImage from "@assets/images/comboMeal.png";
 import classicBurgerImage from "@assets/images/comboMeal.png";
 import grilledChickenImage from "@assets/images/comboMeal.png";
 import crispyTendersImage from "@assets/images/comboMeal.png";
@@ -56,31 +51,31 @@ import spicySrirachaImage from "@assets/images/comboMeal.png";
 export const menuData: { categories: Category[] } = {
   categories: [
     {
-        id: "combo_meal",
-        name: "Combo Meal",
-        type: "combo",
-        image: comboMealImage,
-        discount: "20% off",
-        backgroundColor: "#97DE00",
-        steps: [
-            {
-                id: "sandwich",
-                name: "Sandwich",
-                prompt: "What sandwich would you like for your combo?",
-            },
-            {
-                id: "fries",
-                name: "Fries",
-                prompt: "What type of fries would you like?",
-            },
-            {
-                id: "drinks",
-                name: "Cold Drink",
-                prompt: "What cold drink would you like with your combo?",
-            },
-        ],
-        items: [],
-      },
+      id: "combo_meal",
+      name: "Combo Meal",
+      type: "combo",
+      image: comboMealImage,
+      discount: "20% off",
+      backgroundColor: "#97DE00",
+      steps: [
+        {
+          id: "sandwich",
+          name: "Sandwich",
+          prompt: "What sandwich would you like for your combo?",
+        },
+        {
+          id: "fries",
+          name: "Fries",
+          prompt: "What type of fries would you like?",
+        },
+        {
+          id: "drinks",
+          name: "Cold Drink",
+          prompt: "What cold drink would you like with your combo?",
+        },
+      ],
+      items: [],
+    },
     {
       id: "sandwich",
       name: "Sandwiches",
@@ -92,26 +87,29 @@ export const menuData: { categories: Category[] } = {
           id: "classic_burger",
           name: "Classic Burger",
           price: 5.99,
-          description: "Juicy beef patty with fresh lettuce, tomato, and our special sauce",
+          description:
+            "Juicy beef patty with fresh lettuce, tomato, and our special sauce",
           image: classicBurgerImage,
         },
         {
           id: "grilled_chicken_sandwich",
-          name: "Grilled Chicken Sandwich",
+          name: "Grilled Chicken",
           price: 6.49,
-          description: "Tender grilled chicken breast with avocado and honey mustard",
+          description:
+            "Tender grilled chicken breast with avocado and honey mustard",
           image: grilledChickenImage,
         },
         {
           id: "bacon_burger",
           name: "Bacon Burger",
           price: 7.49,
-          description: "Crispy bacon with beef patty, lettuce, tomato, and cheese",
+          description:
+            "Crispy bacon with beef patty, lettuce, tomato, and cheese",
           image: baconBurgerImage,
         },
         {
           id: "bbq_chicken_sandwich",
-          name: "BBQ Chicken Sandwich",
+          name: "BBQ Chicken",
           price: 6.99,
           description: "Grilled chicken with BBQ sauce, pickles, and onions",
           image: bbqChickenSandwichImage,
@@ -120,7 +118,8 @@ export const menuData: { categories: Category[] } = {
           id: "veggie_burger",
           name: "Veggie Burger",
           price: 6.99,
-          description: "A flavorful veggie patty with lettuce, tomato, and avocado",
+          description:
+            "A flavorful veggie patty with lettuce, tomato, and avocado",
           image: veggieBurgerImage,
         },
         {
@@ -141,35 +140,37 @@ export const menuData: { categories: Category[] } = {
       items: [
         {
           id: "crispy_chicken_tenders",
-          name: "Crispy Chicken Tenders",
+          name: "Crispy Tenders",
           price: 5.99,
-          description: "Crispy breaded chicken tenders, served with your choice of sauce",
+          description:
+            "Crispy breaded chicken tenders, served with your choice of sauce",
           image: crispyTendersImage,
         },
         {
           id: "spicy_chicken_wings",
-          name: "Spicy Chicken Wings",
+          name: "Spicy Wings",
           price: 7.99,
-          description: "Crispy chicken wings tossed in our signature spicy sauce",
+          description:
+            "Crispy chicken wings tossed in our signature spicy sauce",
           image: spicyWingsImage,
         },
         {
           id: "grilled_chicken_breast",
-          name: "Grilled Chicken Breast",
+          name: "Grilled Breast",
           price: 6.99,
           description: "Juicy grilled chicken breast with herbs and spices",
           image: grilledChickenBreastImage,
         },
         {
           id: "bbq_chicken_legs",
-          name: "BBQ Chicken Legs",
+          name: "BBQ Legs",
           price: 8.49,
           description: "Tender chicken legs with our house BBQ sauce",
           image: bbqChickenLegsImage,
         },
         {
           id: "fried_chicken_bucket",
-          name: "Fried Chicken Bucket",
+          name: "Fried Bucket",
           price: 12.99,
           description: "A bucket of fried chicken served with fries",
           image: friedChickenBucketImage,
