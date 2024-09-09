@@ -1,11 +1,10 @@
-import React from 'react';
+import type React from "react";
+import ReactLogo from "@assets/logos/react.svg";
 
 const FrameworkIcons: React.FC = () => {
   return (
-    <div className="flex space-x-4">
-      <img src="/path-to-react-logo.svg" alt="React" className="h-10" />
-      <img src="/path-to-flutter-logo.svg" alt="Flutter" className="h-10" />
-      <img src="/path-to-angular-logo.svg" alt="Angular" className="h-10" />
+    <div className="flex space-x-4 pl-8">
+      <img src={ReactLogo} alt="React" className="h-10" />
     </div>
   );
 };

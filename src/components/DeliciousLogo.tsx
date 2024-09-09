@@ -1,10 +1,19 @@
-import React from "react";
+import type React from "react";
 import DeliciousSVG from "@assets/vectors/delicious.svg";
+import { cn } from "@/lib/utils";
 
-const DeliciousLogo: React.FC = () => {
-	return (
-		<img src={DeliciousSVG} alt='Delicious Logo' className='w-32 h-auto' />
-	);
+interface DeliciousLogoProps {
+  className?: string;
+}
+
+const DeliciousLogo: React.FC<DeliciousLogoProps> = ({ className }) => {
+  return (
+    <img
+      src={DeliciousSVG}
+      alt="Delicious Logo"
+      className={cn("h-auto w-32", className)}
+    />
+  );
 };
 
 export default DeliciousLogo;

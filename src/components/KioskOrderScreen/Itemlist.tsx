@@ -1,66 +1,135 @@
-import React from "react";
+import type React from "react";
+import type { Item } from "@/store/types";
 import { useKioskStore } from "@/store/kioskStore";
-import { Item } from "@/store/types";
+import { cn } from "@/lib/utils";
 
-interface ItemListProps {
-	items: Item[];
-	title: string;
-	discount?: string;
+interface ItemCardProps {
+  item: Item;
+  onAdd: (item: Item) => void;
+  isComboActive: boolean;
+  isTwoColumns: boolean;
 }
 
-const ItemList: React.FC<ItemListProps> = ({ items, title, discount }) => {
-	const addItemToOrder = useKioskStore((state) => state.addItemToOrder);
-	const nextComboStep = useKioskStore((state) => state.nextComboStep);
-	const currentComboStep = useKioskStore((state) => state.currentComboStep);
+/**
+ * Renders an individual item card.
+ * @component
+ */
+const ItemCard: React.FC<ItemCardProps> = ({ item, onAdd, isTwoColumns }) => {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex h-full cursor-pointer flex-col items-center justify-between rounded-[13.27px] border border-white bg-white p-2 pb-4 text-center shadow-default transition-colors hover:border-limeGreen2",
+        isTwoColumns && "h-[339.13px]",
+      )}
+      onClick={() => onAdd(item)}
+    >
+      <img
+        src={item.image}
+        alt={item.name}
+        className={cn(
+          "h-[75.84px] w-[89px] object-scale-down",
+          isTwoColumns && "h-[159px] w-[159px]",
+        )}
+      />
+      <div>
+        <p
+          className={cn(
+            "font-baloo2 font-bold text-[14.74px]",
+            isTwoColumns && "text-[22.12px]",
+          )}
+        >
+          {item.name}
+        </p>
+        <p
+          className={cn(
+            "font-baloo2 font-bold text-[11.06px] text-black/50",
+            isTwoColumns && "text-[18.43px]",
+          )}
+        >
+          {"150g"}
+        </p>
+        <p
+          className={cn(
+            "font-baloo2 font-bold text-[14.74px] text-limeGreen2",
+            isTwoColumns && "text-[25.8px]",
+          )}
+        >
+          ${item.price.toFixed(2)}
+        </p>
+      </div>
+    </button>
+  );
+};
 
-	const isComboActive = currentComboStep !== null;
+interface ItemListProps {
+  items: Item[];
+  title: string;
+  isCombo: boolean;
+  discount?: string;
+}
 
-	const handleAddItem = (item: Item) => {
-		addItemToOrder(item.id, 1);
+/**
+ * Renders a list of items with a title and optional discount.
+ * @component
+ */
+const ItemList: React.FC<ItemListProps> = ({
+  items,
+  title,
+  discount,
+  isCombo,
+}) => {
+  const isTwoColumns = items.length === 2;
+  const addItemToOrder = useKioskStore((state) => state.addItemToOrder);
+  const nextComboStep = useKioskStore((state) => state.nextComboStep);
+  const currentComboStep = useKioskStore((state) => state.currentComboStep);
 
-		if (isComboActive) {
-			nextComboStep();
-		}
-	};
+  const isComboActive = currentComboStep !== null;
 
-	return (
-		<div className='w-full'>
-			<div className='flex items-center mb-4'>
-				<h2 className='text-2xl font-bold mr-2'>{title}</h2>
-				{discount && (
-					<span className='bg-green-500 text-white px-2 py-1 rounded-full text-sm'>
-						{discount}
-					</span>
-				)}
-			</div>
-			<div className='grid grid-cols-3 gap-4'>
-				{items.map((item) => (
-					<button
-						key={item.id}
-						className='bg-white p-4 rounded-lg text-center shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out cursor-pointer flex flex-col items-center justify-between h-full'
-						onClick={() => handleAddItem(item)}
-					>
-						<img
-							src={item.image}
-							alt={item.name}
-							className='w-12 h-12 object-contain mb-2'
-						/>
-						<div>
-							<p className='text-lg font-semibold text-gray-800 mb-1'>
-								{item.name}
-							</p>
-							{/* <p className='text-sm text-gray-500 mb-2'>
-								{item.weight}g
-							</p> */}
-							<p className='text-xl font-bold text-green-500'>
-								${item.price.toFixed(2)}
-							</p>
-						</div>
-					</button>
-				))}
-			</div>
-		</div>
-	);
+  /**
+   * Handles adding an item to the order and advancing the combo step if applicable.
+   * @param {Item} item - The item to add.
+   */
+  const handleAddItem = (item: Item) => {
+    addItemToOrder(item.id, 1);
+
+    if (isComboActive) {
+      nextComboStep();
+    }
+  };
+
+  return (
+    <div className="relative z-[30] w-full p-6 px-8 pt-0">
+      <div className="mb-4 flex items-center">
+        {isCombo ? (
+          <h2 className="mr-2 font-baloo2 text-[30.96px]">
+            <span className="font-bold text-[36px]">Combo,</span> Meals
+          </h2>
+        ) : (
+          <h2 className="mr-2 font-baloo2 font-bold text-[30.96px]">{title}</h2>
+        )}
+
+        {discount && (
+          <span className="ml-2 rounded-full bg-lightGreen px-2 py-1 font-baloo2 font-bold text-[14.74px] text-black text-sm">
+            {discount}
+          </span>
+        )}
+      </div>
+      <div
+        className={cn("grid grid-cols-3 gap-5", isTwoColumns && "grid-cols-2")}
+      >
+        {items.map((item) => (
+          <ItemCard
+            key={item.id}
+            item={item}
+            onAdd={handleAddItem}
+            isComboActive={isComboActive}
+            isTwoColumns={isTwoColumns}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default ItemList;
