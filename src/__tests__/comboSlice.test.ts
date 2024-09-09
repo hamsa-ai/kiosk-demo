@@ -173,7 +173,7 @@ describe("ComboSlice - Extended Scenarios", () => {
     store.nextComboStep();
     useKioskStore.getState().addItemToOrder("curly_fries", 1);
     store.nextComboStep();
-    useKioskStore.getState().addItemToOrder("lemon_lime_soda", 1);
+    useKioskStore.getState().addItemToOrder("orange_juice", 1);
 
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(6); // Two combos (3 items each)

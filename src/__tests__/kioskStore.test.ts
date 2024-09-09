@@ -49,11 +49,11 @@ const colaItem = getMenuItemObject("cola") || {
   description: "Classic cola flavor",
 };
 
-const lemonLimeItem = getMenuItemObject("lemon_lime_soda") || {
-  id: "lemon_lime_soda",
-  name: "Lemon-Lime Soda",
+const orangeJuiceItem = getMenuItemObject("orange_juice") || {
+  id: "orange_juice",
+  name: "Orange Juice",
   price: 1.99,
-  description: "Crisp and refreshing lemon-lime flavor",
+  description: "Refreshing and sweet orange juice",
 };
 
 describe("Kiosk Store Flow", () => {
@@ -147,18 +147,18 @@ describe("Kiosk Store Flow", () => {
 
     // Add another drink
     act(() => {
-      store.addItemToOrder(lemonLimeItem.id, 1);
+      store.addItemToOrder(orangeJuiceItem.id, 1);
     });
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);
     expect(updatedState.currentOrder[0].name).toBe(colaItem.name);
-    expect(updatedState.currentOrder[1].name).toBe(lemonLimeItem.name);
+    expect(updatedState.currentOrder[1].name).toBe(orangeJuiceItem.name);
 
     // Show order summary
     const orderSummary = store.showOrderSummary();
     expect(orderSummary.items).toHaveLength(2);
     expect(orderSummary.itemsTotal.toString()).toBe(
-      (colaItem.price + lemonLimeItem.price).toFixed(2),
+      (colaItem.price + orangeJuiceItem.price).toFixed(2),
     );
   });
 

@@ -62,7 +62,7 @@ const agentParams: HamsaVoiceAgentParams = {
 
       **Drinks** (categoryId: drinks)
       - Cola (itemId: cola)
-      - Lemon-Lime Soda (itemId: lemon_lime_soda)
+      - orange Juice (itemId: orange_juice)
 
       **Fries** (categoryId: fries)
       - Regular Fries (itemId: regular_fries)
@@ -103,6 +103,12 @@ const useVoiceAgent = () => {
   const startAgent = (): void => {
     try {
       agent.start(agentParams);
+      agent.on("transcriptionReceived", (text) => {
+        console.log("User speech transcription received", text);
+      });
+      agent.on("answerReceived", (text) => {
+        console.log("Agent answer received", text);
+      });
       setIsAgentRunning(true);
       console.log("Agent started successfully");
     } catch (error) {
