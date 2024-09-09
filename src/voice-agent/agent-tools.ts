@@ -2,12 +2,11 @@ export const agentTools = [
   {
     function_name: "select_category",
     fn: (categoryId: string) => {
+      console.log("categoryId :", categoryId);
       return `${window.kioskStore.selectCategory(categoryId)} you are now in the category ${categoryId}. Which item do you want to order?`;
     },
     description: `
-        This function should be called when the user mentions a category they want to explore or select from.
-        Except for combo meals.
-      `,
+       This function opens a category of items when the users asks or wants to order one of them, and if the user wants to see the menu of a specific category`,
     parameters: [
       {
         name: "categoryId",

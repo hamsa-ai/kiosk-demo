@@ -1,4 +1,5 @@
 import type React from "react";
+import { motion } from "framer-motion";
 import { useKioskStore } from "@/store/kioskStore";
 import Counter from "./Counter";
 import { cn, getItemImage } from "@/lib/utils";
@@ -21,7 +22,13 @@ const CartItemCard: React.FC<{
   quantity: number;
 }> = ({ id, name, price, quantity }) => {
   return (
-    <div className="relative mb-2 flex items-center rounded-[13.27px] bg-white p-2 shadow-default">
+    <motion.div
+      className="relative mb-2 flex items-center rounded-[13.27px] bg-white p-2 shadow-default"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      layoutId={id}
+    >
       <div
         className={cn(
           "-right-[10px] -top-[6px] absolute flex min-h-[26.54px] min-w-[26.54px] items-center justify-center rounded-full bg-limeGreen2 px-1",
@@ -50,7 +57,7 @@ const CartItemCard: React.FC<{
           )}`}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -70,7 +77,12 @@ const Cart: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full flex-col rounded-lg bg-lightGray pt-[55px]">
+    <motion.div
+      className="flex h-full flex-col rounded-lg bg-lightGray pt-[55px]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="mb-6 flex items-center justify-between px-6">
         <h2 className="font-baloo2 font-bold text-[14.74px]">Your Cart</h2>
         <Counter itemCount={currentOrder.length} />
@@ -78,7 +90,16 @@ const Cart: React.FC = () => {
 
       {currentOrder.length > 0 ? (
         <>
-          <div className="flex-grow space-y-3 overflow-auto px-5 py-2 ">
+          <motion.div
+            className="flex-grow space-y-3 overflow-auto px-5 py-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: 0.6,
+              delayChildren: 0.2,
+              staggerChildren: 0.1,
+            }}
+          >
             {currentOrder.map((item) => (
               <CartItemCard
                 key={item.id}
@@ -88,39 +109,64 @@ const Cart: React.FC = () => {
                 quantity={item.quantity}
               />
             ))}
-          </div>
+          </motion.div>
           <div className="px-6 pb-6">
-            <p className="font-baloo2 font-bold text-[24.33px] text-black">
+            <motion.p
+              className="font-baloo2 font-bold text-[24.33px] text-black"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
               {`$${itemsTotal}`}
-            </p>
-            <p className="font-baloo2 font-bold text-[8.11px] text-black/50 leading-[15px]">
+            </motion.p>
+            <motion.p
+              className="font-baloo2 font-bold text-[8.11px] text-black/50 leading-[15px]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
               Delivery fees
               <br />
               <span className="text-[15px]">{`$${deliveryCost}`}</span>
-            </p>
-            <p className="font-baloo2 font-bold text-[31.7px] text-limeGreen2">
+            </motion.p>
+            <motion.p
+              className="font-baloo2 font-bold text-[31.7px] text-limeGreen2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
               {`$${total}`}
-            </p>
+            </motion.p>
 
-            <button
+            <motion.button
               className="relative z-[40] rounded-[58.98px] bg-limeGreen2 px-6 py-2 font-baloo2 font-semibold text-black"
               type="button"
               onClick={handleCompleteOrderClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
             >
               Complete order
-            </button>
+            </motion.button>
           </div>
         </>
       ) : (
-        <div className="m-auto">
+        <motion.div
+          className="m-auto"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <img
             src={EmptyCart}
             alt="Empty Cart"
             className="h-[175px] w-[175px]"
           />
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

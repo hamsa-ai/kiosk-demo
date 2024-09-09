@@ -14,26 +14,25 @@ import sauceImage from "@assets/images/sauce.png";
 // import crispyTendersImage from "@assets/images/crispyTenders.png";
 // import spicyWingsImage from "@assets/images/spicyWings.png";
 // import colaImage from "@assets/images/cola.png";
-// import lemonLimeImage from "@assets/images/lemonLime.png";
 // import regularFriesImage from "@assets/images/regularFries.png";
 // import curlyFriesImage from "@assets/images/curlyFries.png";
 // import ketchupImage from "@assets/images/ketchup.png";
 // import mayoImage from "@assets/images/mayo.png";
+import colaImage from "@assets/images/cola.png";
+import orangeJuiceImage from "@assets/images/orange-juice.png";
 
 import classicBurgerImage from "@assets/images/comboMeal.png";
 import grilledChickenImage from "@assets/images/comboMeal.png";
 import crispyTendersImage from "@assets/images/comboMeal.png";
 import spicyWingsImage from "@assets/images/comboMeal.png";
-import colaImage from "@assets/images/comboMeal.png";
-import lemonLimeImage from "@assets/images/comboMeal.png";
-import regularFriesImage from "@assets/images/comboMeal.png";
-import curlyFriesImage from "@assets/images/comboMeal.png";
+import regularFriesImage from "@assets/images/fries.png";
+import curlyFriesImage from "@assets/images/fries.png";
 import ketchupImage from "@assets/images/comboMeal.png";
 import mayoImage from "@assets/images/comboMeal.png";
-import waffleFriesImage from "@assets/images/comboMeal.png";
-import sweetPotatoFriesImage from "@assets/images/comboMeal.png";
-import loadedFriesImage from "@assets/images/comboMeal.png";
-import garlicParmesanFriesImage from "@assets/images/comboMeal.png";
+import waffleFriesImage from "@assets/images/fries.png";
+import sweetPotatoFriesImage from "@assets/images/fries.png";
+import loadedFriesImage from "@assets/images/fries.png";
+import garlicParmesanFriesImage from "@assets/images/fries.png";
 import baconBurgerImage from "@assets/images/comboMeal.png";
 import bbqChickenSandwichImage from "@assets/images/comboMeal.png";
 import veggieBurgerImage from "@assets/images/comboMeal.png";
@@ -199,11 +198,11 @@ export const menuData: { categories: Category[] } = {
           image: colaImage,
         },
         {
-          id: "lemon_lime_soda",
-          name: "Lemon-Lime Soda",
+          id: "orange_juice",
+          name: "Orange Juice",
           price: 1.99,
-          description: "Crisp and refreshing lemon-lime flavor",
-          image: lemonLimeImage,
+          description: "Refreshing and sweet orange juice",
+          image: orangeJuiceImage,
         },
       ],
     },
