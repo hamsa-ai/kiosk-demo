@@ -36,13 +36,10 @@ interface HamsaVoiceAgentParams {
 const agentParams: HamsaVoiceAgentParams = {
   agentId: AGENT_ID,
   voiceEnablement: true,
-  tools: agentTools.slice(0, 4),
+  tools: agentTools,
   params: {
     our_menu: `
       ### Categories and Items:
-
-      **Combo Meal** (categoryId: combo_meal)
-      - No items listed
 
       **Sandwiches** (categoryId: sandwich)
       - Classic Burger (itemId: classic_burger)
@@ -79,6 +76,8 @@ const agentParams: HamsaVoiceAgentParams = {
       - Ranch Sauce (itemId: ranch_sauce)
       - Honey Mustard (itemId: honey_mustard)
       - Spicy Sriracha (itemId: spicy_sriracha)
+
+    If the user ask about an item call the function that opens the category of the item
     `,
   },
 };
