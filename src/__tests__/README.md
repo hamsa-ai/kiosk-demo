@@ -4,20 +4,18 @@ This directory contains the unit tests for the Voice-Controlled Kiosk Demo appli
 
 ## **Directory Structure**
 
-```
+```bash
 /__tests__
 ├── categorySlice.test.ts
-├── comboSlice.test.ts
 ├── kioskStore.test.ts
 └── orderSlice.test.ts
 ```
 
 ### **Files and Their Roles**
 
--   **`categorySlice.test.ts`**: Tests for the `CategorySlice`, which manages category selections within the application.
--   **`comboSlice.test.ts`**: Tests for the `ComboSlice`, which handles the logic for selecting items within a combo meal.
--   **`kioskStore.test.ts`**: Comprehensive tests for the entire `kioskStore`, which combines the individual slices into a unified store and simulates complete user flows through the kiosk system.
--   **`orderSlice.test.ts`**: Tests for the `OrderSlice`, which manages the current order, including actions like adding items, editing quantities, and canceling orders.
+- **`categorySlice.test.ts`**: Tests for the `CategorySlice`, which manages category selections within the application.
+- **`kioskStore.test.ts`**: Comprehensive tests for the entire `kioskStore`, which combines the individual slices into a unified store and simulates complete user flows through the kiosk system.
+- **`orderSlice.test.ts`**: Tests for the `OrderSlice`, which manages the current order, including actions like adding items, editing quantities, and canceling orders.
 
 ## **Testing with Vitest**
 
@@ -39,19 +37,13 @@ Each test file focuses on specific aspects of the state management:
     - Tests the ability to select categories by ID.
     - Ensures correct handling when attempting to select a non-existent category.
 
-2. **ComboSlice Tests**:
-
-    - Validates the flow of a combo meal selection, including moving between steps.
-    - Ensures proper handling of edge cases, such as attempting to move beyond the final combo step.
-    - Tests the behavior when skipping steps and returning to previous steps.
-
-3. **OrderSlice Tests**:
+2. **OrderSlice Tests**:
 
     - Tests adding items to the order, ensuring quantities update correctly.
     - Verifies the functionality for editing and removing items from the order.
     - Confirms that order cancellation and completion work as expected, including resetting the state.
 
-4. **KioskStore Tests**:
+3. **KioskStore Tests**:
     - Simulates complete user flows, from starting an order to completing or canceling it.
     - Tests complex scenarios involving multiple categories and item selections.
     - Ensures that the store correctly handles interactions between the various slices, maintaining a consistent state throughout.
@@ -63,7 +55,6 @@ To run the tests, simply execute the following command in the root directory of 
 ```bash
 npx vitest
 ```
-
 
 This will trigger Vitest to run all the test cases in the `__tests__` directory, outputting the results to the console.
 
@@ -86,9 +77,9 @@ If new features or state slices are added to the application, you should:
 
 ### **Best Practices**
 
--   **Write Descriptive Test Cases**: Ensure that each test case clearly describes what it is testing and what the expected outcome is.
--   **Test Edge Cases**: Always include tests for edge cases, such as invalid inputs, empty states, and boundary conditions.
--   **Keep Tests Modular**: Tests should be independent and modular, focusing on one aspect of the functionality at a time.
+- **Write Descriptive Test Cases**: Ensure that each test case clearly describes what it is testing and what the expected outcome is.
+- **Test Edge Cases**: Always include tests for edge cases, such as invalid inputs, empty states, and boundary conditions.
+- **Keep Tests Modular**: Tests should be independent and modular, focusing on one aspect of the functionality at a time.
 
 ### **Example Test Case**
 
@@ -100,34 +91,31 @@ import { act } from "@testing-library/react";
 import { useKioskStore } from "../store/kioskStore";
 
 /**
- * Scenario: Simple Combo Meal Order with Editing and Completion
- * This test verifies that a user can select a combo meal, edit their selection, and complete the order successfully.
+ * Scenario: Simple Order with Editing and Completion
+ * This test verifies that a user can select an item, edit their selection, and complete the order successfully.
  */
-it("Scenario 1: Simple Combo Meal Order with Editing and Completion", () => {
-	const store = useKioskStore.getState();
+it("Scenario 1: Simple Order with Editing and Completion", () => {
+ const store = useKioskStore.getState();
 
-	// Initial state check
-	expect(store.currentOrder).toEqual([]);
-	expect(store.currentCategory).toBeNull();
-	expect(store.currentComboStep).toBeNull();
+ // Initial state check
+ expect(store.currentOrder).toEqual([]);
+ expect(store.currentCategory).toBeNull();
 
-	// Simulate category selection and order placement
-	act(() => {
-		store.selectCategory("combo_meal");
-		store.startComboOrder("burger_combo");
-		store.nextComboStep();
-		store.addItemToOrder({
-			id: "classic_burger",
-			name: "Classic Burger",
-			price: 5.99,
-			quantity: 1,
-		});
-	});
+ // Simulate category selection and order placement
+ act(() => {
+  store.selectCategory("burgers");
+  store.addItemToOrder({
+   id: "beef_burger",
+   name: "Beef Burger",
+   price: 5.5,
+   quantity: 1,
+  });
+ });
 
-	// Validate order completion
-	const completedOrder = store.completeOrder();
-	expect(completedOrder.items).toHaveLength(1);
-	expect(completedOrder.total).toBe("5.99");
+ // Validate order completion
+ const completedOrder = store.completeOrder();
+ expect(completedOrder.items).toHaveLength(1);
+ expect(completedOrder.total).toBe("5.50");
 });
 ```
 

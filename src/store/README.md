@@ -8,7 +8,6 @@ This directory contains the state management setup for the Voice-Controlled Kios
 /store
 ├── /slices
 │   ├── categorySlice.ts
-│   ├── comboSlice.ts
 │   └── orderSlice.ts
 ├── initialState.ts
 ├── kioskStore.ts
@@ -21,14 +20,13 @@ This directory contains the state management setup for the Voice-Controlled Kios
 -   **`/slices`**: Contains individual slices of the state, each responsible for managing a specific part of the application's state.
 
     -   **`categorySlice.ts`**: Manages the current category selection and category-related actions, ensuring that users can switch between categories effectively.
-    -   **`comboSlice.ts`**: Handles the combo meal selection process, including the steps involved in selecting items within a combo. It supports actions like moving to the next step, skipping steps, and handling edge cases such as ensuring the flow does not proceed beyond the final step.
     -   **`orderSlice.ts`**: Manages the current order, including adding items, updating quantities, editing items, displaying the order summary, completing orders, and canceling orders.
 
 -   **`initialState.ts`**: Defines the initial state of the kiosk, including empty orders and default settings, which can be reset during the application's lifecycle.
 
 -   **`kioskStore.ts`**: Combines all the slices into a single store using Zustand's `create` method. This is the central store that the rest of the application interacts with. It also includes a reset functionality to clear the state when necessary.
 
--   **`menuData.ts`**: Contains the mock data for the menu. This is used within the slices to retrieve categories, items, and combo details. It helps simulate real-world scenarios for testing and development.
+-   **`menuData.ts`**: Contains the mock data for the menu. This is used within the slices to retrieve categories and items. It helps simulate real-world scenarios for testing and development.
 
 -   **`types.ts`**: Contains TypeScript interfaces and types used across the state slices. This helps in maintaining type safety and clarity throughout the state management.
 
@@ -64,5 +62,50 @@ The store is designed with robust actions that handle various user interactions:
 
 -   **Adding Items to Order**: Adds items to the current order. If an item already exists, it updates the quantity instead of duplicating the item.
 -   **Editing and Removing Items**: Allows users to modify the quantity or details of an item or remove it entirely from the order.
--   **Combo Meal Management**: Manages the steps in a combo meal, including moving forward, skipping steps, and ensuring the flow correctly handles edge cases like not moving beyond the last step.
 -   **Reset State**: Provides a way to reset the entire state, which is useful for scenarios like order cancellation or starting a new order.
+
+### **Example Usage**
+
+To use the store in a component, you can import the necessary hooks and actions:
+
+```tsx
+import useKioskStore from "@/store/kioskStore";
+
+const OrderScreen = () => {
+	const { addItemToOrder, currentOrder, showOrderSummary } = useKioskStore();
+
+	const handleAddItem = () => {
+		addItemToOrder("item1", 2);
+	};
+
+	const orderSummary = showOrderSummary();
+
+	return (
+		<div>
+			<button onClick={handleAddItem}>Add Item</button>
+			<div>
+				{currentOrder.map((item) => (
+					<div key={item.id}>
+						{item.name} - {item.quantity}
+					</div>
+				))}
+			</div>
+			<div>Total: {orderSummary.total}</div>
+		</div>
+	);
+};
+```
+
+### **Resetting State**
+
+The store also provides a reset functionality, which can be used to reset the entire state when needed, such as after completing or canceling an order.
+
+```tsx
+import useKioskStore from "@/store/kioskStore";
+
+const ResetButton = () => {
+	const resetOrder = useKioskStore((state) => state.resetOrder);
+
+	return <button onClick={resetOrder}>Reset Order</button>;
+};
+```

@@ -5,6 +5,7 @@ import Counter from "./Counter";
 import { cn, getItemImage } from "@/lib/utils";
 import EmptyCart from "@assets/vectors/empty-cart.svg";
 import useVoiceAgent from "@/voice-agent/useVoiceAgent";
+import type { OrderItem } from "@/store/slices/orderSlice";
 
 /**
  * CartItemCard component to render an individual item in the cart.
@@ -15,19 +16,20 @@ import useVoiceAgent from "@/voice-agent/useVoiceAgent";
  * @param {number} props.price - Item price
  * @param {number} props.quantity - Item quantity
  */
-const CartItemCard: React.FC<{
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-}> = ({ id, name, price, quantity }) => {
+const CartItemCard: React.FC<OrderItem> = ({
+  id,
+  name,
+  price,
+  quantity,
+  calories,
+}) => {
   return (
     <motion.div
       className="relative mb-2 flex items-center rounded-[13.27px] bg-white p-2 shadow-default"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      layoutId={id}
+      layoutId={`item-${id}`}
     >
       <div
         className={cn(
@@ -50,7 +52,7 @@ const CartItemCard: React.FC<{
         </div>
         <div className="flex w-full items-start justify-between pr-4">
           <p className={"font-baloo2 font-bold text-[11.06px] text-black/50"}>
-            {"150g"}
+            {`${calories} cal`}
           </p>
           <p className="font-baloo2 font-bold text-[14.74px] text-limeGreen2">{`$${price.toFixed(
             2,
@@ -107,6 +109,7 @@ const Cart: React.FC = () => {
                 name={item.name}
                 price={item.price}
                 quantity={item.quantity}
+                calories={item.calories}
               />
             ))}
           </motion.div>
@@ -117,7 +120,7 @@ const Cart: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              {`$${itemsTotal}`}
+              {`$${itemsTotal.toFixed(2)}`}
             </motion.p>
             <motion.p
               className="font-baloo2 font-bold text-[8.11px] text-black/50 leading-[15px]"
@@ -127,7 +130,7 @@ const Cart: React.FC = () => {
             >
               Delivery fees
               <br />
-              <span className="text-[15px]">{`$${deliveryCost}`}</span>
+              <span className="text-[15px]">{`$${deliveryCost.toFixed(2)}`}</span>
             </motion.p>
             <motion.p
               className="font-baloo2 font-bold text-[31.7px] text-limeGreen2"
@@ -135,7 +138,7 @@ const Cart: React.FC = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              {`$${total}`}
+              {`$${total.toFixed(2)}`}
             </motion.p>
 
             <motion.button

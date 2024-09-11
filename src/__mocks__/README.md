@@ -4,7 +4,7 @@ The `__mocks__` directory is designed to provide mock implementations and utilit
 
 ## **Directory Structure**
 
-```
+```bash
 /__mocks__
 └── zustand.ts
 ```
@@ -59,7 +59,7 @@ import { createOrderSlice, type OrderSlice } from "../store/slices/orderSlice";
 type TestStore = OrderSlice;
 
 const useOrderStore = create<TestStore>((...a) => ({
-	...createOrderSlice(...a),
+ ...createOrderSlice(...a),
 }));
 ```
 
@@ -83,24 +83,24 @@ import { createOrderSlice, type OrderSlice } from "../store/slices/orderSlice";
 type TestStore = OrderSlice;
 
 const useOrderStore = create<TestStore>((...a) => ({
-	...createOrderSlice(...a),
+ ...createOrderSlice(...a),
 }));
 
 describe("OrderSlice", () => {
-	it("should add an item to the order", () => {
-		const store = useOrderStore.getState();
+ it("should add an item to the order", () => {
+  const store = useOrderStore.getState();
 
-		store.addItemToOrder({
-			id: "burger",
-			name: "Burger",
-			price: 5.99,
-			quantity: 1,
-		});
+  store.addItemToOrder({
+   id: "burger",
+   name: "Burger",
+   price: 5.99,
+   quantity: 1,
+  });
 
-		const updatedState = useOrderStore.getState();
-		expect(updatedState.currentOrder).toHaveLength(1);
-		expect(updatedState.currentOrder[0].name).toBe("Burger");
-	});
+  const updatedState = useOrderStore.getState();
+  expect(updatedState.currentOrder).toHaveLength(1);
+  expect(updatedState.currentOrder[0].name).toBe("Burger");
+ });
 });
 ```
 

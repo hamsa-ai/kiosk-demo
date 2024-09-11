@@ -23,18 +23,15 @@ const useOrderStore = create<TestStore>((...a) => ({
 const getUpdatedState = () => useOrderStore.getState();
 
 describe("OrderSlice", () => {
-  const burgerItem = getMenuItemObject("classic_burger") || {
-    id: "classic_burger",
-    name: "Classic Burger",
-    price: 5.99,
-    description:
-      "Juicy beef patty with fresh lettuce, tomato, and our special sauce",
+  const beefBurgerItem = getMenuItemObject("beef_burger") || {
+    id: "beef_burger",
+    name: "Beef Burger",
+    price: 5.5,
   };
-  const friesItem = getMenuItemObject("regular_fries") || {
-    id: "regular_fries",
-    name: "Regular Fries",
-    price: 2.49,
-    description: "Crispy golden fries",
+  const frenchFriesItem = getMenuItemObject("french_fries") || {
+    id: "french_fries",
+    name: "French Fries",
+    price: 2.5,
   };
 
   /**
@@ -53,14 +50,15 @@ describe("OrderSlice", () => {
   it("should add an item to the order", () => {
     const state = getUpdatedState();
 
-    state.addItemToOrder(burgerItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
 
     const updatedState = getUpdatedState();
+    console.log("updatedState :", updatedState);
     expect(updatedState.currentOrder).toHaveLength(1);
     expect(updatedState.currentOrder[0]).toEqual({
-      id: burgerItem.id,
-      name: burgerItem.name,
-      price: burgerItem.price,
+      id: beefBurgerItem.id,
+      name: beefBurgerItem.name,
+      price: beefBurgerItem.price,
       quantity: 1,
     });
   });
@@ -72,13 +70,13 @@ describe("OrderSlice", () => {
   it("should add multiple items to the order", () => {
     const state = getUpdatedState();
 
-    state.addItemToOrder(burgerItem.id, 1);
-    state.addItemToOrder(friesItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
+    state.addItemToOrder(frenchFriesItem.id, 1);
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);
-    expect(updatedState.currentOrder[0].name).toBe(burgerItem.name);
-    expect(updatedState.currentOrder[1].name).toBe(friesItem.name);
+    expect(updatedState.currentOrder[0].name).toBe(beefBurgerItem.name);
+    expect(updatedState.currentOrder[1].name).toBe(frenchFriesItem.name);
   });
 
   /**
@@ -88,8 +86,8 @@ describe("OrderSlice", () => {
   it("should update the quantity of an existing item in the order", () => {
     const state = getUpdatedState();
 
-    state.addItemToOrder(burgerItem.id, 1);
-    state.addItemToOrder(burgerItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(1);
@@ -102,7 +100,7 @@ describe("OrderSlice", () => {
    */
   it("should reset order when canceled", () => {
     const state = getUpdatedState();
-    state.addItemToOrder(burgerItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
 
     state.cancelOrder();
 
@@ -117,12 +115,12 @@ describe("OrderSlice", () => {
   it("should show order summary", () => {
     const state = getUpdatedState();
 
-    state.addItemToOrder(burgerItem.id, 1);
-    state.addItemToOrder(friesItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
+    state.addItemToOrder(frenchFriesItem.id, 1);
 
     const summary = state.showOrderSummary();
     expect(summary.items).toHaveLength(2);
-    expect(summary.itemsTotal.toString()).toBe("8.48"); // Assuming burger price is 5.99 and fries price is 2.49
+    expect(summary.itemsTotal.toString()).toBe("8"); // Assuming burger price is 5.99 and fries price is 2.49
   });
 
   /**
@@ -132,14 +130,14 @@ describe("OrderSlice", () => {
   it("should complete the order", () => {
     const state = getUpdatedState();
 
-    state.addItemToOrder(burgerItem.id, 1);
-    state.addItemToOrder(friesItem.id, 1);
+    state.addItemToOrder(beefBurgerItem.id, 1);
+    state.addItemToOrder(frenchFriesItem.id, 1);
 
     const completedOrder = state.completeOrder();
 
     const updatedState = getUpdatedState();
     expect(completedOrder.items).toHaveLength(2);
-    expect(completedOrder.itemsTotal.toString()).toBe("8.48");
+    expect(completedOrder.itemsTotal.toString()).toBe("8");
     expect(updatedState.currentOrder).toEqual([]);
   });
 
@@ -166,8 +164,8 @@ describe("OrderSlice", () => {
   it("should add items with different quantities", () => {
     const state = getUpdatedState();
 
-    state.addItemToOrder(burgerItem.id, 2);
-    state.addItemToOrder(friesItem.id, 3);
+    state.addItemToOrder(beefBurgerItem.id, 2);
+    state.addItemToOrder(frenchFriesItem.id, 3);
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);

@@ -5,19 +5,16 @@ import {
   createCategorySlice,
   type CategorySlice,
 } from "../store/slices/categorySlice";
-import { createComboSlice, type ComboSlice } from "../store/slices/comboSlice";
-import type { ComboStep } from "../store/types";
 import { create } from "../__mocks__/zustand";
 import { initialState } from "../store/initialState";
 import { getMenuItemObject } from "@/lib/utils";
 
 // Combine all slices into a single store type
-type KioskState = OrderSlice & CategorySlice & ComboSlice;
+type KioskState = OrderSlice & CategorySlice;
 
 const useKioskStore = create<KioskState>((...a) => ({
   ...createOrderSlice(...a),
   ...createCategorySlice(...a),
-  ...createComboSlice(...a),
 }));
 
 // Utility function to get the updated state
@@ -26,275 +23,256 @@ const getUpdatedState = () => useKioskStore.getState();
 // Utility function to reset the state
 const resetState = () => useKioskStore.setState(initialState);
 
-// Helper function to get menu items with fallback
-const burgerItem = getMenuItemObject("classic_burger") || {
-  id: "classic_burger",
-  name: "Classic Burger",
-  price: 5.99,
-  description:
-    "Juicy beef patty with fresh lettuce, tomato, and our special sauce",
+const beefBurgerItem = getMenuItemObject("beef_burger") || {
+  id: "beef_burger",
+  name: "Beef Burger",
+  price: 5.5,
 };
 
-const friesItem = getMenuItemObject("regular_fries") || {
-  id: "regular_fries",
-  name: "Regular Fries",
-  price: 2.49,
-  description: "Crispy golden fries",
+const frenchFriesItem = getMenuItemObject("french_fries") || {
+  id: "french_fries",
+  name: "French Fries",
+  price: 2.5,
 };
 
-const colaItem = getMenuItemObject("cola") || {
-  id: "cola",
-  name: "Cola",
-  price: 1.99,
-  description: "Classic cola flavor",
+const cocaColaItem = getMenuItemObject("coca_cola") || {
+  id: "coca_cola",
+  name: "Coca Cola",
+  price: 1.5,
 };
 
-const orangeJuiceItem = getMenuItemObject("orange_juice") || {
-  id: "orange_juice",
-  name: "Orange Juice",
-  price: 1.99,
-  description: "Refreshing and sweet orange juice",
+const moltenCakeItem = getMenuItemObject("molten_cake") || {
+  id: "molten_cake",
+  name: "Molten Cake",
+  price: 3.5,
 };
-
 describe("Kiosk Store Flow", () => {
   /**
-   * Scenario 1: Simple Combo Meal Order with Editing and Completion
-   * This test verifies the flow of starting a combo meal order, navigating through the steps,
-   * making changes to the selections, and completing the order.
+   * Scenario 1: Simple Order with Editing and Completion
+   * This test verifies the flow of starting an order, adding items, making changes to the selections,
+   * and completing the order.
    */
-  it("Scenario 1: Simple Combo Meal Order with Editing and Completion", () => {
+  it("Scenario 1: Simple Order with Editing and Completion", () => {
     const store = getUpdatedState();
 
     // Initial state
     expect(store.currentOrder).toEqual([]);
     expect(store.currentCategory).toBeNull();
-    expect(store.currentComboStep).toBeNull();
 
-    // Select "Combo Meal" category
+    // Select "Burgers" category
     act(() => {
-      store.selectCategory("combo_meal");
+      store.selectCategory("burgers");
     });
 
     let updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("combo_meal");
-
-    // Start "Burger Combo" order
-    const firstStep: ComboStep = store.startComboOrder() as ComboStep;
-
-    updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(0);
-    expect(firstStep?.name).toBe("Sandwich");
+    expect(updatedState.currentCategory?.id).toBe("burgers");
 
     // Add an item to the order
     act(() => {
-      store.addItemToOrder(burgerItem.id, 1);
+      store.addItemToOrder(beefBurgerItem.id, 1);
     });
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(1);
-    expect(updatedState.currentOrder[0].name).toBe(burgerItem.name);
+    expect(updatedState.currentOrder[0].name).toBe(beefBurgerItem.name);
 
     // Show order summary
     const orderSummary = store.showOrderSummary();
     expect(orderSummary.items).toHaveLength(1);
     expect(orderSummary.itemsTotal.toString()).toBe(
-      burgerItem.price.toFixed(2),
+      beefBurgerItem.price.toString(),
     );
   });
 
   /**
-   * Scenario 2: Combo Meal Order with Skipping a Step and Adding Non-Combo Items
-   * This test verifies that the user can skip steps in a combo, add the selected combo items to the order,
-   * and then select items from a different category.
+   * Scenario 2: Multi-Category Order with Additional Items
+   * This test verifies that the user can select items from different categories.
    */
-  it("Scenario 2: Combo Meal Order with Skipping a Step and Adding Non-Combo Items", () => {
+  it("Scenario 2: Multi-Category Order with Additional Items", () => {
     const store = getUpdatedState();
 
-    // Select "Combo Meal" category
+    // Select "Burgers" category
     act(() => {
-      store.selectCategory("combo_meal");
+      store.selectCategory("burgers");
     });
 
     let updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("combo_meal");
+    expect(updatedState.currentCategory?.id).toBe("burgers");
 
-    // Start "Burger Combo" order
+    // Add Beef Burger to the order
     act(() => {
-      store.startComboOrder();
-    });
-
-    updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(0);
-
-    // Skip the fries step and move to the drink step
-    act(() => {
-      store.nextComboStep(); // Skip to fries
-      store.skipComboStep(); // Skip to drink
+      store.addItemToOrder(beefBurgerItem.id, 1);
     });
     updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(2);
-
-    // Add the drink to the order (completing the combo selection so far)
-    act(() => {
-      store.addItemToOrder(colaItem.id, 1);
-    });
-
-    // Select the "Drinks" category to add an additional drink
-    act(() => {
-      store.selectCategory("drinks");
-    });
-    updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("drinks");
-
-    // Add another drink
-    act(() => {
-      store.addItemToOrder(orangeJuiceItem.id, 1);
-    });
-    updatedState = getUpdatedState();
-    expect(updatedState.currentOrder).toHaveLength(2);
-    expect(updatedState.currentOrder[0].name).toBe(colaItem.name);
-    expect(updatedState.currentOrder[1].name).toBe(orangeJuiceItem.name);
-
-    // Show order summary
-    const orderSummary = store.showOrderSummary();
-    expect(orderSummary.items).toHaveLength(2);
-    expect(orderSummary.itemsTotal.toString()).toBe(
-      (colaItem.price + orangeJuiceItem.price).toFixed(2),
-    );
-  });
-
-  /**
-   * Scenario 3: Combo Meal Order Cancellation
-   * This test verifies that when a combo meal order is cancelled, all related states, including the current category and combo step, are reset.
-   */
-  it("Scenario 3: Combo Meal Order Cancellation", () => {
-    const store = getUpdatedState();
-
-    // Select "Combo Meal" category
-    act(() => {
-      store.selectCategory("combo_meal");
-    });
-
-    let updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("combo_meal");
-
-    // Start "Burger Combo" order
-    act(() => {
-      store.startComboOrder();
-    });
-
-    updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(0);
-
-    // Cancel the order
-    act(() => {
-      resetState();
-    });
-    updatedState = getUpdatedState();
-    expect(updatedState.currentOrder).toEqual([]);
-    expect(updatedState.currentCategory).toBeNull();
-    expect(updatedState.currentComboStep).toBeNull();
-  });
-
-  /**
-   * Scenario 4: Multi-Category Order with Combo and Non-Combo Items
-   * This test verifies that the user can start a combo meal order, complete it, and then select and add items from other categories to the order.
-   */
-  it("Scenario 4: Multi-Category Order with Combo and Non-Combo Items", () => {
-    const store = getUpdatedState();
-
-    // Select "Combo Meal" category
-    act(() => {
-      store.selectCategory("combo_meal");
-    });
-
-    let updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("combo_meal");
-
-    // Start "Burger Combo" order
-    act(() => {
-      store.startComboOrder();
-    });
-
-    updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(0);
-
-    // Add sandwich to the order and move to the next step
-    act(() => {
-      store.addItemToOrder(burgerItem.id, 1);
-      store.nextComboStep();
-    });
-    updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(1);
     expect(updatedState.currentOrder).toHaveLength(1);
 
-    // Switch to "Fries" category and add fries
+    // Switch to "Appetizers" category and add French Fries
     act(() => {
-      store.selectCategory("fries");
+      store.selectCategory("appetizers");
     });
     updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("fries");
+    expect(updatedState.currentCategory?.id).toBe("appetizers");
 
     act(() => {
-      store.addItemToOrder(friesItem.id, 1);
+      store.addItemToOrder(frenchFriesItem.id, 1);
     });
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);
 
-    // Switch to "Drinks" category and add a drink
+    // Switch to "Beverages" category and add Coca Cola
     act(() => {
-      store.selectCategory("drinks");
+      store.selectCategory("beverages");
     });
     updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("drinks");
+    expect(updatedState.currentCategory?.id).toBe("beverages");
 
     act(() => {
-      store.addItemToOrder(colaItem.id, 1);
+      store.addItemToOrder(cocaColaItem.id, 1);
     });
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(3);
   });
 
   /**
-   * Scenario 5: Editing and Removing Items Before Checkout
+   * Scenario 3: Editing and Removing Items Before Checkout
    * This test verifies that the user can edit and remove items from the order before finalizing the checkout.
    */
-  it("Scenario 5: Editing and Removing Items Before Checkout", () => {
+  it("Scenario 3: Editing and Removing Items Before Checkout", () => {
     const store = getUpdatedState();
 
-    // Select "Combo Meal" category
+    // Select "Desserts" category
     act(() => {
-      store.selectCategory("combo_meal");
+      store.selectCategory("desserts");
     });
 
     let updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("combo_meal");
+    expect(updatedState.currentCategory?.id).toBe("desserts");
 
-    // Start "Chicken Combo" order
+    // Add Molten Cake to the order
     act(() => {
-      store.startComboOrder();
-    });
-
-    updatedState = getUpdatedState();
-    expect(updatedState.currentComboStep).toBe(0);
-
-    // Add the sandwich to the order
-    act(() => {
-      store.addItemToOrder("grilled_chicken_sandwich", 1);
+      store.addItemToOrder(moltenCakeItem.id, 1);
     });
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(1);
 
-    // Switch to "Sauce" category and add sauce
+    // Switch to "Appetizers" category and add French Fries
     act(() => {
-      store.selectCategory("sauce");
+      store.selectCategory("appetizers");
     });
     updatedState = getUpdatedState();
-    expect(updatedState.currentCategory?.id).toBe("sauce");
+    expect(updatedState.currentCategory?.id).toBe("appetizers");
 
     act(() => {
-      store.addItemToOrder("bbq_sauce", 1);
+      store.addItemToOrder(frenchFriesItem.id, 1);
     });
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);
+
+    // Edit Molten Cake quantity
+    act(() => {
+      store.editItemInOrder(moltenCakeItem.id, 2);
+    });
+    updatedState = getUpdatedState();
+    expect(updatedState.currentOrder[0].quantity).toBe(2);
+
+    // Remove French Fries from the order
+    act(() => {
+      store.removeItemFromOrder(frenchFriesItem.id);
+    });
+    updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toHaveLength(1);
+  });
+
+  /**
+   * Scenario 4: Adding multiple quantities of the same item
+   * This test ensures that adding multiple quantities of the same item updates the order correctly.
+   */
+  it("Scenario 4: Adding multiple quantities of the same item", () => {
+    const store = getUpdatedState();
+
+    // Select "Burgers" category
+    act(() => {
+      store.selectCategory("burgers");
+    });
+
+    let updatedState = getUpdatedState();
+    expect(updatedState.currentCategory?.id).toBe("burgers");
+
+    // Add Beef Burger with quantity 3
+    act(() => {
+      store.addItemToOrder(beefBurgerItem.id, 3);
+    });
+    updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toHaveLength(1);
+    expect(updatedState.currentOrder[0].quantity).toBe(3);
+    expect(updatedState.currentOrder[0].name).toBe(beefBurgerItem.name);
+  });
+
+  /**
+   * Scenario 5: Handling non-existent items
+   * This test verifies that the store handles adding non-existent items gracefully.
+   */
+  it("Scenario 5: Handling non-existent items", () => {
+    const store = getUpdatedState();
+
+    // Try to add an item that doesn't exist
+    act(() => {
+      store.addItemToOrder("non_existent_item", 1);
+    });
+
+    const updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toEqual([]); // No items should be added
+  });
+
+  /**
+   * Scenario 6: Handling negative or zero quantity
+   * This test verifies that adding items with zero or negative quantities does not update the order.
+   */
+  it("Scenario 6: Handling negative or zero quantity", () => {
+    const store = getUpdatedState();
+
+    // Select "Burgers" category
+    act(() => {
+      store.selectCategory("burgers");
+    });
+
+    // Try to add an item with zero quantity
+    act(() => {
+      store.addItemToOrder(beefBurgerItem.id, 0);
+    });
+    let updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toEqual([]); // No item should be added
+
+    // Try to add an item with negative quantity
+    act(() => {
+      store.addItemToOrder(beefBurgerItem.id, -2);
+    });
+    updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toEqual([]); // No item should be added
+  });
+
+  /**
+   * Scenario 7: Resetting the order state
+   * This test verifies that resetting the state clears the current order and category selection.
+   */
+  it("Scenario 7: Resetting the order state", () => {
+    const store = getUpdatedState();
+
+    // Select "Burgers" category and add Beef Burger
+    act(() => {
+      store.selectCategory("burgers");
+      store.addItemToOrder(beefBurgerItem.id, 1);
+    });
+
+    let updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toHaveLength(1);
+    expect(updatedState.currentCategory?.id).toBe("burgers");
+
+    // Reset the state
+    act(() => {
+      resetState();
+    });
+    updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toEqual([]);
+    expect(updatedState.currentCategory).toBeNull();
   });
 });

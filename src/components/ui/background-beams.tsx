@@ -63,9 +63,9 @@ export const BackgroundBeams = React.memo(
               }`}
               d={path}
               stroke="black"
-              stroke-opacity="0.1"
-              stroke-width="0.75"
-              stroke-miterlimit="10"
+              strokeOpacity="0.1"
+              strokeWidth="0.75"
+              strokeMiterlimit="10"
             />
           ))}
 
