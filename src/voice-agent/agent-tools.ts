@@ -5,7 +5,6 @@ export const agentTools = [
   {
     function_name: "select_category",
     fn: (categoryId: string) => {
-      console.log("categoryId :", categoryId);
       return `${useKioskStore.getState().selectCategory(categoryId)} you are now in the category ${categoryId}. Which item do you want to order?`;
     },
     description:

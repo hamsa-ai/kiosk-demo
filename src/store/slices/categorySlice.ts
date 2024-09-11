@@ -27,7 +27,6 @@ export const createCategorySlice: StateCreator<CategorySlice> = (set) => ({
    * @returns The selected Category or null if not found.
    */
   selectCategory: (categoryId) => {
-    console.log("categoryId :", categoryId);
     const category =
       menuData.categories.find((cat) => cat.id === categoryId) || null;
 

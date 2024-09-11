@@ -98,7 +98,6 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onAdd, isTwoColumns }) => {
     cloneItem: state.cloneItem,
   }));
 
-  console.log("cloneItem :", cloneItem);
   const handleAddItem = () => {
     onAdd(item);
   };
