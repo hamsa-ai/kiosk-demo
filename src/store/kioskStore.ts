@@ -5,8 +5,6 @@ import {
   createCategorySlice,
 } from "./slices/categorySlice";
 
-import { initialState } from "./initialState";
-
 type KioskState = OrderSlice & CategorySlice;
 
 // Create the Zustand store by combining the slices
