@@ -85,21 +85,30 @@ export const agentTools = [
     required: ["itemId"],
   },
   {
-    function_name: "show_order_summary",
-    fn: () => {
-      return `This is summary is: ${useKioskStore.getState().showOrderSummary()} `;
-    },
-    description: "Shows the summary of the order and the total amount",
-    parameters: [],
-    required: [],
-  },
-  {
     function_name: "cancel_order",
     fn: () => {
       return `${useKioskStore.getState().cancelOrder()} Order was cancelled`;
     },
     description:
       "Cancels the current order and resets all state, including selected categories.",
+    parameters: [],
+    required: [],
+  },
+  {
+    function_name: "complete_order",
+    fn: () => {
+      return `${useKioskStore.getState().completeOrder()} Order was completed`;
+    },
+    description: "Completes the current order",
+    parameters: [],
+    required: [],
+  },
+  {
+    function_name: "go_to_main_menu",
+    fn: () => {
+      return `${useKioskStore.getState().removeCategory()} You are now in the main menu`;
+    },
+    description: "Go to main menu",
     parameters: [],
     required: [],
   },
