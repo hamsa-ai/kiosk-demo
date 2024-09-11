@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.4...v0.0.5) (2024-09-11)
+
+
+### Features
+
+* finalize demo ([020d647](https://github.com/hamsa-ai/kiosk-demo/commit/020d647ee8ec59bd631632aac83fc550f824a6de))
+* fix voice agents code ([bbb10e7](https://github.com/hamsa-ai/kiosk-demo/commit/bbb10e7af8142301c7fa3913d6074522b78e56d1))
+* latest changes ([a7b600a](https://github.com/hamsa-ai/kiosk-demo/commit/a7b600a55510a0cc4ec061793e771fc0360508ef))
+
+
+### Bug Fixes
+
+* **ts:** removed unused variable ([68854c5](https://github.com/hamsa-ai/kiosk-demo/commit/68854c59992645e16fbae59a101400deae4e8103))
+
 ### [0.0.4](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.3...v0.0.4) (2024-09-09)
 
 
