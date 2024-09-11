@@ -27,18 +27,12 @@ const CategoryCard: React.FC<{
       <img
         src={category.image}
         alt={category.name}
-        className="mx-auto w-20 object-center"
+        className="mx-auto w-[72px] object-center"
       />
       {/* Category Name */}
       <p className="text-center font-baloo2 font-bold text-[14.74px]">
         {category.name}
       </p>
-      {/* Discount Badge */}
-      {category.discount && (
-        <span className="rounded-full bg-lightGreen px-2 font-baloo2 font-semibold text-black text-sm">
-          {category.discount}
-        </span>
-      )}
     </button>
   );
 };
@@ -49,9 +43,8 @@ const CategoryCard: React.FC<{
  */
 const CategoryList: React.FC = () => {
   // Access the necessary actions from Zustand store
-  const { selectCategory, startComboOrder } = useKioskStore((state) => ({
+  const { selectCategory } = useKioskStore((state) => ({
     selectCategory: state.selectCategory,
-    startComboOrder: state.startComboOrder,
   }));
 
   /**
@@ -59,11 +52,7 @@ const CategoryList: React.FC = () => {
    * @param {Category} category - The selected category.
    */
   const handleCategoryClick = (category: Category) => {
-    if (category.id === "combo_meal") {
-      startComboOrder(); // Start the combo order if the "Combo Meal" category is selected
-    } else {
-      selectCategory(category.id); // Otherwise, select the category
-    }
+    selectCategory(category.id);
   };
 
   return (

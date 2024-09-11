@@ -6,33 +6,24 @@ import ItemList from "./Itemlist";
 
 /**
  * The screen displaying the item list and cart.
- * It shows items from the selected category or combo step.
+ * It shows items from the selected category.
  *
  * @param {Object} props
- * @param {boolean} props.isCombo - Whether the user is in a combo flow.
  * @returns {JSX.Element} The rendered ItemAndCartScreen component.
  */
-const ItemAndCartScreen: React.FC<{ isCombo: boolean }> = ({ isCombo }) => {
-  const {
-    currentCategory,
-    getItemsForCurrentStep,
-    removeCategory,
-    resetCombo,
-  } = useKioskStore((state) => ({
+const ItemAndCartScreen: React.FC = () => {
+  const { currentCategory, removeCategory } = useKioskStore((state) => ({
     currentCategory: state.currentCategory,
-    getItemsForCurrentStep: state.getItemsForCurrentStep,
     removeCategory: state.removeCategory,
-    resetCombo: state.resetCombo,
   }));
 
-  const items = isCombo ? getItemsForCurrentStep() : currentCategory?.items;
+  const items = currentCategory?.items;
 
   /**
    * Handles the "Main menu" button click to reset the current category.
    */
   const handleMainMenuClick = () => {
     removeCategory();
-    resetCombo();
   };
 
   return (
@@ -56,9 +47,8 @@ const ItemAndCartScreen: React.FC<{ isCombo: boolean }> = ({ isCombo }) => {
         <div className="relative">
           <ItemList
             items={items ?? []}
-            title={isCombo ? "Combo Meals" : currentCategory?.name || ""}
-            discount={isCombo ? "20% off" : undefined}
-            isCombo={isCombo}
+            title={currentCategory?.name || ""}
+            discount={undefined}
           />
         </div>
       </div>

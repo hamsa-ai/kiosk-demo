@@ -4,16 +4,15 @@ import {
   type CategorySlice,
   createCategorySlice,
 } from "./slices/categorySlice";
-import { type ComboSlice, createComboSlice } from "./slices/comboSlice";
+
 import { initialState } from "./initialState";
 
-type KioskState = OrderSlice & CategorySlice & ComboSlice;
+type KioskState = OrderSlice & CategorySlice;
 
 // Create the Zustand store by combining the slices
 export const useKioskStore = create<KioskState>((...a) => ({
   ...createOrderSlice(...a),
   ...createCategorySlice(...a),
-  ...createComboSlice(...a),
 }));
 
 // Extend the Window interface to include kioskStore with the correct type

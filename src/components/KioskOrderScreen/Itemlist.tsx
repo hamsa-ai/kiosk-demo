@@ -1,15 +1,8 @@
 import type React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Item } from "@/store/types";
 import { useKioskStore } from "@/store/kioskStore";
 import { cn } from "@/lib/utils";
-
-interface ItemCardProps {
-  item: Item;
-  onAdd: (item: Item) => void;
-  isComboActive: boolean;
-  isTwoColumns: boolean;
-}
 
 interface ItemCardButtonProps {
   item: Item;
@@ -17,6 +10,7 @@ interface ItemCardButtonProps {
   isTwoColumns: boolean;
   className?: string;
   layoutId?: string;
+  isClone?: boolean;
 }
 
 const ItemCardButton: React.FC<ItemCardButtonProps> = ({
@@ -25,6 +19,7 @@ const ItemCardButton: React.FC<ItemCardButtonProps> = ({
   isTwoColumns,
   className,
   layoutId,
+  isClone = false,
 }) => {
   return (
     <motion.button
@@ -34,9 +29,18 @@ const ItemCardButton: React.FC<ItemCardButtonProps> = ({
         className,
       )}
       onClick={() => onAdd(item)}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      whileHover={isClone ? undefined : { scale: 1.05 }}
+      whileTap={isClone ? undefined : { scale: 0.95 }}
       layoutId={layoutId}
+      transition={
+        isClone
+          ? {
+              type: "spring",
+              stiffness: 100,
+              damping: 20,
+            }
+          : {}
+      }
     >
       <motion.img
         src={item.image}
@@ -45,14 +49,14 @@ const ItemCardButton: React.FC<ItemCardButtonProps> = ({
           "h-[75.84px] w-[89px]",
           isTwoColumns && "h-[170px] w-[170px]",
         )}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        initial={isClone ? undefined : { opacity: 0, y: 20 }}
+        animate={isClone ? undefined : { opacity: 1, y: 0 }}
+        transition={isClone ? undefined : { duration: 0.5 }}
       />
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        initial={isClone ? undefined : { opacity: 0, y: 20 }}
+        animate={isClone ? undefined : { opacity: 1, y: 0 }}
+        transition={isClone ? undefined : { duration: 0.6 }}
       >
         <p
           className={cn(
@@ -68,7 +72,7 @@ const ItemCardButton: React.FC<ItemCardButtonProps> = ({
             isTwoColumns && "text-[18.43px]",
           )}
         >
-          {"150g"}
+          {item.calories} cal
         </p>
         <p
           className={cn(
@@ -83,28 +87,46 @@ const ItemCardButton: React.FC<ItemCardButtonProps> = ({
   );
 };
 
-/**
- * Renders an individual item card.
- * @component
- */
+interface ItemCardProps {
+  item: Item;
+  onAdd: (item: Item) => void;
+  isTwoColumns: boolean;
+}
+
 const ItemCard: React.FC<ItemCardProps> = ({ item, onAdd, isTwoColumns }) => {
+  const { cloneItem } = useKioskStore((state) => ({
+    cloneItem: state.cloneItem,
+  }));
+
+  console.log("cloneItem :", cloneItem);
+  const handleAddItem = () => {
+    onAdd(item);
+  };
+
   return (
     <div
       className={cn("relative h-full w-full", isTwoColumns && "h-[339.13px]")}
     >
       <ItemCardButton
         item={item}
-        onAdd={onAdd}
+        onAdd={handleAddItem}
         isTwoColumns={isTwoColumns}
-        // className="z-[30]"
       />
-      {/* <ItemCardButton
-        item={item}
-        onAdd={onAdd}
-        isTwoColumns={isTwoColumns}
-        className="!z-[40] absolute inset-0 shadow-none"
-        layoutId={item.id}
-      /> */}
+
+      <AnimatePresence>
+        {cloneItem && cloneItem.id === item.id && (
+          <div className="pointer-events-none absolute top-0 left-0 z-50 h-full w-full">
+            <ItemCardButton
+              item={cloneItem}
+              onAdd={() => {}}
+              isTwoColumns={isTwoColumns}
+              isClone
+              className="!pointer-events-none"
+              layoutId={`item-${cloneItem.id}`}
+            />
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -112,37 +134,18 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, onAdd, isTwoColumns }) => {
 interface ItemListProps {
   items: Item[];
   title: string;
-  isCombo: boolean;
   discount?: string;
 }
 
-/**
- * Renders a list of items with a title and optional discount.
- * @component
- */
-const ItemList: React.FC<ItemListProps> = ({
-  items,
-  title,
-  discount,
-  isCombo,
-}) => {
+const ItemList: React.FC<ItemListProps> = ({ items, title, discount }) => {
   const isTwoColumns = items.length === 2;
-  const addItemToOrder = useKioskStore((state) => state.addItemToOrder);
-  const nextComboStep = useKioskStore((state) => state.nextComboStep);
-  const currentComboStep = useKioskStore((state) => state.currentComboStep);
 
-  const isComboActive = currentComboStep !== null;
+  const { addItemToOrder } = useKioskStore((state) => ({
+    addItemToOrder: state.addItemToOrder,
+  }));
 
-  /**
-   * Handles adding an item to the order and advancing the combo step if applicable.
-   * @param {Item} item - The item to add.
-   */
   const handleAddItem = (item: Item) => {
     addItemToOrder(item.id, 1);
-
-    if (isComboActive) {
-      nextComboStep();
-    }
   };
 
   return (
@@ -153,28 +156,14 @@ const ItemList: React.FC<ItemListProps> = ({
       transition={{ duration: 0.6 }}
     >
       <div className="mb-4 flex items-center">
-        {isCombo ? (
-          <h2 className="mr-2 font-baloo2 text-[30.96px]">
-            <motion.span
-              className="font-bold text-[36px]"
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              Combo,
-            </motion.span>{" "}
-            Meals
-          </h2>
-        ) : (
-          <motion.h2
-            className="mr-2 font-baloo2 font-bold text-[30.96px]"
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-          >
-            {title}
-          </motion.h2>
-        )}
+        <motion.h2
+          className="mr-2 font-baloo2 font-bold text-[30.96px]"
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          {title}
+        </motion.h2>
 
         {discount && (
           <motion.span
@@ -206,7 +195,6 @@ const ItemList: React.FC<ItemListProps> = ({
             key={item.id}
             item={item}
             onAdd={handleAddItem}
-            isComboActive={isComboActive}
             isTwoColumns={isTwoColumns}
           />
         ))}

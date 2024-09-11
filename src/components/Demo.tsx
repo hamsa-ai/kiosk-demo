@@ -1,5 +1,5 @@
-import { useState } from "react";
-import Kiosk from "@assets/vectors/kiosk.svg";
+import { useState, memo } from "react";
+import Kiosk from "@assets/images/kiosk.png";
 import KioskOrderScreen from "./KioskOrderScreen/KioskOrderScreen";
 import { useKioskStore } from "@/store/kioskStore";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,20 +8,61 @@ import FoodImage from "@assets/images/food.png";
 import { cn } from "@/lib/utils";
 import useVoiceAgent from "@/voice-agent/useVoiceAgent";
 
-export default function Demo() {
+interface MascotAndFoodProps {
+  isCategoryList: boolean;
+  isCompleted: boolean;
+}
+
+const MascotAndFood: React.FC<MascotAndFoodProps> = memo(
+  ({ isCategoryList, isCompleted }) =>
+    !isCategoryList && (
+      <div className="-bottom-[250px] absolute z-10 flex w-full justify-between">
+        <motion.img
+          layoutId="food-poster-image"
+          src={FoodImage}
+          alt="Food"
+          className={cn(
+            "-left-[200px] relative h-[238.87px] w-[308.94px]",
+            isCompleted ? "-left-[210px]" : "-left-[200px]",
+          )}
+          transition={{
+            type: "spring",
+            stiffness: 100,
+            damping: 20,
+          }}
+        />
+        <motion.div
+          transition={{
+            type: "spring",
+            stiffness: 100,
+            damping: 20,
+          }}
+        >
+          {!isCompleted ? (
+            <Mascot className="-right-[330px] relative top-[125px] h-[701.85px] w-[720.28px]" />
+          ) : (
+            <Mascot
+              className="-top-[200px] relative right-[200px] h-[604.54px] w-[620.02px]"
+              orderComplete={true}
+            />
+          )}
+        </motion.div>
+      </div>
+    ),
+);
+
+// Main Demo component
+const Demo: React.FC = () => {
   const { startAgent } = useVoiceAgent();
-  const [isOpen, setIsOpen] = useState(false);
-  const { currentCategory, currentComboStep, isCompleted } = useKioskStore(
-    (state) => ({
-      currentCategory: state.currentCategory,
-      currentComboStep: state.currentComboStep,
-      isCompleted: state.isCompleted,
-    }),
-  );
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { currentCategory, isCompleted } = useKioskStore((state) => ({
+    currentCategory: state.currentCategory,
+    isCompleted: state.isCompleted,
+  }));
 
-  const isCategoryList = !currentCategory && currentComboStep === null;
+  const isCategoryList: boolean = !currentCategory;
 
-  const handleIpadClick = () => {
+  const handleIpadClick = (): void => {
     if (!isOpen) {
       setIsOpen(true);
       startAgent();
@@ -84,45 +125,18 @@ export default function Demo() {
               <img
                 src={Kiosk}
                 alt="Kiosk"
-                className="relative z-[30] h-auto w-[254px]"
+                className="relative z-[30] h-[531px] w-[254px]"
               />
             </motion.div>
           </div>
-          {!isCategoryList && (
-            <div className="-bottom-[250px] absolute z-10 flex w-full justify-between">
-              <motion.img
-                layoutId="food-poster-image"
-                src={FoodImage}
-                alt="Food"
-                className={cn(
-                  "-left-[200px] relative h-[238.87px] w-[308.94px]",
-                  isCompleted ? "-left-[210px]" : "-left-[200px]",
-                )}
-                animate={{ x: isOpen ? 0 : "100%" }}
-                transition={{
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 20,
-                }}
-              />
-              <motion.div
-                animate={{ x: isOpen ? 0 : "100%" }}
-                transition={{
-                  type: "spring",
-                  stiffness: 100,
-                  damping: 20,
-                }}
-              >
-                {!isCompleted ? (
-                  <Mascot className="-right-[330px] relative top-[125px] h-[701.85px] w-[720.28px]" />
-                ) : (
-                  <Mascot className="-top-[200px] relative right-[200px] h-[604.54px] w-[620.02px]" />
-                )}
-              </motion.div>
-            </div>
-          )}
+          <MascotAndFood
+            isCategoryList={isCategoryList}
+            isCompleted={isCompleted}
+          />
         </motion.div>
       </div>
     </div>
   );
-}
+};
+
+export default Demo;

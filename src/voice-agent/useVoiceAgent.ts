@@ -39,46 +39,58 @@ const agentParams: HamsaVoiceAgentParams = {
   tools: agentTools,
   params: {
     our_menu: `
-      ### Categories and Items:
+  ### Categories and Items:
 
-      **Sandwiches** (categoryId: sandwich)
-      - Classic Burger (itemId: classic_burger)
-      - Grilled Chicken Sandwich (itemId: grilled_chicken_sandwich)
-      - Bacon Burger (itemId: bacon_burger)
-      - BBQ Chicken Sandwich (itemId: bbq_chicken_sandwich)
-      - Veggie Burger (itemId: veggie_burger)
-      - Turkey Sandwich (itemId: turkey_sandwich)
+  **Burgers (برغر)** (categoryId: burgers)
+  - Beef Burger (برغر لحم) (itemId: beef_burger) - 450 calories - $5.50
+  - Chicken Burger (برغر دجاج) (itemId: chicken_burger) - 400 calories - $5.00
+  - Cheese Burger (برغر جبن) (itemId: cheese_burger) - 500 calories - $6.00
+  - Veggie Burger (برغر خضار) (itemId: veggie_burger) - 350 calories - $4.50
+  - Double Burger (برغر دبل) (itemId: double_burger) - 600 calories - $7.00
+  - Spicy Burger (برغر حار) (itemId: spicy_burger) - 420 calories - $6.50
 
-      **Chicken** (categoryId: chicken)
-      - Crispy Chicken Tenders (itemId: crispy_chicken_tenders)
-      - Spicy Chicken Wings (itemId: spicy_chicken_wings)
-      - Grilled Chicken Breast (itemId: grilled_chicken_breast)
-      - BBQ Chicken Legs (itemId: bbq_chicken_legs)
-      - Fried Chicken Bucket (itemId: fried_chicken_bucket)
-      - Popcorn Chicken (itemId: popcorn_chicken)
+  **Sandwiches (ساندويتشات)** (categoryId: sandwiches)
+  - Club Sandwich (ساندويتش كلوب) (itemId: club_sandwich) - 300 calories - $4.00
+  - Chicken Wrap (راب دجاج) (itemId: chicken_wrap) - 350 calories - $4.50
+  - Tuna Sandwich (ساندويتش تونة) (itemId: tuna_sandwich) - 280 calories - $3.80
+  - Falafel Wrap (راب فلافل) (itemId: falafel_wrap) - 270 calories - $3.60
+  - Turkey Melt (تركي مذاب) (itemId: turkey_melt) - 380 calories - $5.50
+  - Fish Sandwich (ساندويتش سمك) (itemId: fish_sandwich) - 330 calories - $5.00
 
-      **Drinks** (categoryId: drinks)
-      - Cola (itemId: cola)
-      - orange Juice (itemId: orange_juice)
+  **Appetizers (مقبلات)** (categoryId: appetizers)
+  - French Fries (بطاطا مقلية) (itemId: french_fries) - 200 calories - $2.50
+  - Onion Rings (حلقات بصل) (itemId: onion_rings) - 220 calories - $3.00
+  - Chicken Wings (أجنحة دجاج) (itemId: chicken_wings) - 450 calories - $4.50
+  - Garlic Bread (خبز بالثوم) (itemId: garlic_bread) - 180 calories - $2.20
+  - Mozzarella Sticks (أصابع موزاريلا) (itemId: mozzarella_sticks) - 310 calories - $3.50
+  - Cheese Nachos (ناتشوز بالجبن) (itemId: cheese_nachos) - 320 calories - $3.80
 
-      **Fries** (categoryId: fries)
-      - Regular Fries (itemId: regular_fries)
-      - Curly Fries (itemId: curly_fries)
-      - Waffle Fries (itemId: waffle_fries)
-      - Sweet Potato Fries (itemId: sweet_potato_fries)
-      - Loaded Fries (itemId: loaded_fries)
-      - Garlic Parmesan Fries (itemId: garlic_parmesan_fries)
+  **Salads (سلطات)** (categoryId: salads)
+  - Caesar Salad (سلطة سيزر) (itemId: caesar_salad) - 150 calories - $4.00
+  - Chicken Salad (سلطة دجاج) (itemId: chicken_salad) - 200 calories - $4.50
+  - Greek Salad (سلطة يونانية) (itemId: greek_salad) - 170 calories - $4.20
+  - Garden Salad (سلطة حدائق) (itemId: garden_salad) - 130 calories - $3.50
+  - Avocado Salad (سلطة أفوكادو) (itemId: avocado_salad) - 180 calories - $4.80
+  - Tuna Salad (سلطة تونة) (itemId: tuna_salad) - 160 calories - $4.00
 
-      **Sauce** (categoryId: sauce)
-      - Ketchup (itemId: ketchup)
-      - Mayonnaise (itemId: mayo)
-      - BBQ Sauce (itemId: bbq_sauce)
-      - Ranch Sauce (itemId: ranch_sauce)
-      - Honey Mustard (itemId: honey_mustard)
-      - Spicy Sriracha (itemId: spicy_sriracha)
+  **Beverages (مشروبات)** (categoryId: beverages)
+  - Coca Cola (كوكا كولا) (itemId: coca_cola) - 140 calories - $1.50
+  - Sprite Soda (سبرايت صودا) (itemId: sprite_soda) - 130 calories - $1.50
+  - Iced Tea (شاي مثلج) (itemId: iced_tea) - 120 calories - $1.80
+  - Lemonade Twist (عصير ليمون) (itemId: lemonade_twist) - 100 calories - $2.00
+  - Orange Juice (عصير برتقال) (itemId: orange_juice) - 110 calories - $2.00
+  - Vanilla Shake (شيك فانيليا) (itemId: vanilla_shake) - 220 calories - $2.50
 
-    If the user ask about an item call the function that opens the category of the item
-    `,
+  **Desserts (حلويات)** (categoryId: desserts)
+  - Chocolate Cake (كعكة شوكولاتة) (itemId: chocolate_cake) - 250 calories - $3.50
+  - Apple Pie (فطيرة تفاح) (itemId: apple_pie) - 220 calories - $3.00
+  - Ice Cream (آيس كريم) (itemId: ice_cream) - 180 calories - $2.80
+  - Caramel Tart (تارت كراميل) (itemId: caramel_tart) - 210 calories - $3.20
+  - Brownie Delight (برواني ديلايت) (itemId: brownie_delight) - 300 calories - $3.00
+  - Molten Cake (كعكة مولتن) (itemId: molten_cake) - 330 calories - $3.50
+
+  If the user ask about an item call the function that opens the category of the item
+`,
   },
 };
 

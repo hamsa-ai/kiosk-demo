@@ -2,5 +2,4 @@
 export const initialState = {
   currentOrder: [],
   currentCategory: null,
-  currentComboStep: null,
 };

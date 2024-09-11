@@ -1,5 +1,6 @@
 import { getMenuItemObject } from "@/lib/utils";
 import type { StateCreator } from "zustand";
+import type { Item } from "../types";
 
 /**
  * Represents an item in the order.
@@ -9,6 +10,7 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+  calories: number;
 }
 
 export interface OrderSummary {
@@ -24,6 +26,7 @@ export interface OrderSummary {
 export interface OrderSlice {
   currentOrder: OrderItem[];
   isCompleted: boolean;
+  cloneItem: Item | null;
 
   /**
    * Adds an item to the current order.
@@ -32,6 +35,13 @@ export interface OrderSlice {
    * @param quantity - The quantity of the item to add.
    */
   addItemToOrder: (itemId: string, quantity: number) => void;
+
+  /**
+   * Sets the clone item for animations or UI purposes.
+   *
+   * @param item - The item to clone or null to clear the clone.
+   */
+  setCloneItem: (item: Item | null) => void;
 
   /**
    * Edits the quantity of an existing item in the order.
@@ -83,6 +93,7 @@ export interface OrderSlice {
 export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
   currentOrder: [],
   isCompleted: false,
+  cloneItem: null,
 
   /**
    * Adds an item to the current order. If the item already exists in the order, it updates the quantity.
@@ -91,34 +102,62 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    * @param quantity - The quantity to add.
    */
   addItemToOrder: (itemId: string, quantity: number) => {
+    if (quantity <= 0) {
+      console.log(`Quantity must be greater than 0. Skipping item ${itemId}.`);
+      return;
+    }
     const item = getMenuItemObject(itemId);
     if (!item) {
       console.log(`Item with id ${itemId} not found.`);
       return;
     }
 
-    set((state) => {
-      const existingItemIndex = state.currentOrder.findIndex(
-        (orderItem) => orderItem.id === itemId,
-      );
+    const itemInOrder = !!get().currentOrder.find(
+      (orderItem) => orderItem.id === itemId,
+    );
 
-      if (existingItemIndex !== -1) {
-        // Update quantity if item already exists
-        const updatedOrder = [...state.currentOrder];
-        updatedOrder[existingItemIndex].quantity += quantity;
-        return { currentOrder: updatedOrder };
+    if (!itemInOrder) {
+      set({ cloneItem: item });
+    }
+    setTimeout(() => {
+      set((state) => {
+        const existingItemIndex = state.currentOrder.findIndex(
+          (orderItem) => orderItem.id === itemId,
+        );
+
+        if (existingItemIndex !== -1) {
+          // Update quantity if item already exists
+          const updatedOrder = [...state.currentOrder];
+          updatedOrder[existingItemIndex].quantity += quantity;
+
+          return { currentOrder: updatedOrder };
+        }
+
+        // Add new item if it doesn't exist in the order
+        const newOrderItem: OrderItem = {
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity,
+          calories: item.calories,
+        };
+
+        return { currentOrder: [...state.currentOrder, newOrderItem] };
+      });
+      if (!itemInOrder) {
+        set({ cloneItem: null });
       }
-
-      // Add new item if it doesn't exist in the order
-      const newOrderItem: OrderItem = {
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity,
-      };
-      return { currentOrder: [...state.currentOrder, newOrderItem] };
-    });
+    }, 100);
     console.log(`Added to order: ${quantity}x ${item.name}`);
+  },
+
+  /**
+   * Sets the clone item for animations or UI purposes.
+   *
+   * @param item - The item to clone or null to clear the clone.
+   */
+  setCloneItem: (item: Item | null) => {
+    set({ cloneItem: item });
   },
 
   /**
@@ -168,16 +207,11 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
     const deliveryCost = 0.5; // Fixed delivery cost, adjust as needed
     const total = itemsTotal + deliveryCost;
 
-    console.log("Current order:", currentOrder);
-    console.log("Items total:", itemsTotal.toFixed(2));
-    console.log("Delivery cost:", deliveryCost.toFixed(2));
-    console.log("Total with delivery:", total.toFixed(2));
-
     return {
       items: currentOrder,
-      itemsTotal: Number(itemsTotal.toFixed(2)),
-      deliveryCost: Number(deliveryCost.toFixed(2)),
-      total: Number(total.toFixed(2)),
+      itemsTotal,
+      deliveryCost,
+      total,
     };
   },
 
@@ -188,7 +222,6 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    */
   completeOrder: () => {
     const orderSummary = get().showOrderSummary();
-    console.log("Order completed!");
     set({ isCompleted: true, currentOrder: [] });
     return orderSummary;
   },
@@ -198,7 +231,6 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    */
   cancelOrder: () => {
     set({ currentOrder: [] });
-    console.log("Order cancelled.");
   },
 
   /**
@@ -206,6 +238,5 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    */
   resetOrder: () => {
     set({ currentOrder: [], isCompleted: false });
-    console.log("Order reset.");
   },
 });

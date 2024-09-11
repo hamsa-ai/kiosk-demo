@@ -1,18 +1,18 @@
 # **Voice-Controlled Kiosk Demo**
 
-This project serves as a demo for integrating the Hamsa AI Voice Agent into a food ordering kiosk. It allows users to interact with a voice-controlled kiosk that guides them through the process of selecting and ordering food items, including combo meals and non-combo items.
+This project serves as a demo for integrating the Hamsa AI Voice Agent into a food ordering kiosk. It allows users to interact with a voice-controlled kiosk that guides them through the process of selecting and ordering food items.
 
 ## **Table of Contents**
 
--   [Project Overview](#project-overview)
--   [Features](#features)
--   [Tech Stack](#tech-stack)
--   [Installation](#installation)
--   [Project Structure](#project-structure)
--   [Usage](#usage)
--   [Available Scripts](#available-scripts)
--   [Contributing](#contributing)
--   [License](#license)
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Usage](#usage)
+- [Available Scripts](#available-scripts)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## **Project Overview**
 
@@ -20,17 +20,16 @@ This is a voice-controlled food ordering kiosk demo, built with React, Zustand, 
 
 ## **Features**
 
--   **Voice-Controlled Interaction**: Navigate the menu and place orders using voice commands.
--   **Real-Time UI Updates**: The UI updates instantly as selections are made.
--   **Combo Meal Management**: Step-by-step guidance through combo meal selections.
--   **Order Summary and Completion**: View a summary of the order and finalize it easily.
+- **Voice-Controlled Interaction**: Navigate the menu and place orders using voice commands.
+- **Real-Time UI Updates**: The UI updates instantly as selections are made.
+- **Order Summary and Completion**: View a summary of the order and finalize it easily.
 
 ## **Tech Stack**
 
--   **Frontend**: React, Zustand
--   **Build Tool**: Vite
--   **Styling**: Tailwind CSS
--   **State Management**: Zustand
+- **Frontend**: React, Zustand
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
 
 ## **Installation**
 
@@ -57,7 +56,7 @@ To set up the project locally, follow these steps:
 ## **Project Structure**
 
 ```bash
-/your-project-root
+/kiosk-demo
 ├── /public
 │   └── vite.svg
 ├── /src
@@ -72,7 +71,6 @@ To set up the project locally, follow these steps:
 │   │   ├── menuData.ts
 │   │   ├── /slices
 │   │   │   ├── categorySlice.ts
-│   │   │   ├── comboSlice.ts
 │   │   │   └── orderSlice.ts
 │   │   └── types.ts
 │   ├── /__mocks__
@@ -93,24 +91,23 @@ To set up the project locally, follow these steps:
 
 1. **Start the Demo**: Click the "Start Demo" button on the main screen.
 2. **Category Selection**: Use voice commands or clicks to select a menu category.
-3. **Combo Meal Process**: Follow voice guidance to select items for a combo meal.
-4. **Order Summary**: Review the order summary and complete the order.
+3. **Order Summary**: Review the order summary and complete the order.
 
 ### **Customizing Menu Data**
 
--   The menu data is located in the `menuData.ts` file within the `/src/store` directory. Modify this file to change the menu categories, items, and combo steps.
+- The menu data is located in the `menuData.ts` file within the `/src/store` directory. Modify this file to change the menu categories and items.
 
 ## **Available Scripts**
 
 Here are the scripts you can run using `yarn`:
 
--   **`yarn dev`**: Starts the development server.
--   **`yarn build`**: Builds the app for production.
--   **`yarn preview`**: Previews the production build locally.
--   **`yarn format`**: Formats the codebase using Biome.
--   **`yarn lint`**: Lints the codebase using Biome.
--   **`yarn commit`**: Runs Commitizen for generating commit messages.
--   **`yarn release`**: Runs the release script.
+- **`yarn dev`**: Starts the development server.
+- **`yarn build`**: Builds the app for production.
+- **`yarn preview`**: Previews the production build locally.
+- **`yarn format`**: Formats the codebase using Biome.
+- **`yarn lint`**: Lints the codebase using Biome.
+- **`yarn commit`**: Runs Commitizen for generating commit messages.
+- **`yarn release`**: Runs the release script.
 
 ## **Contributing**
 
