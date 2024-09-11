@@ -65,6 +65,7 @@ const CartItemCard: React.FC<OrderItem> = ({
 
 const Cart: React.FC = () => {
   const currentOrder = useKioskStore((state) => state.currentOrder);
+  const reversedCurrentOrder = currentOrder.slice().reverse();
   const showOrderSummary = useKioskStore((state) => state.showOrderSummary);
   const completeOrder = useKioskStore((state) => state.completeOrder);
   const { total, itemsTotal, deliveryCost } = showOrderSummary();
@@ -102,7 +103,7 @@ const Cart: React.FC = () => {
               staggerChildren: 0.1,
             }}
           >
-            {currentOrder.map((item) => (
+            {reversedCurrentOrder.map((item) => (
               <CartItemCard
                 key={item.id}
                 id={item.id}
