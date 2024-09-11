@@ -5,8 +5,7 @@ export const agentTools = [
       console.log("categoryId :", categoryId);
       return `${window.kioskStore.selectCategory(categoryId)} you are now in the category ${categoryId}. Which item do you want to order?`;
     },
-    description: `
-       This function opens a category of items when the users asks or wants to order one of them, and if the user wants to see the menu of a specific category`,
+    description: "This function opens the category of products, it should be called whenever the users ask about a product in a category, or ask about the category products (ex Which sandwiches you have?)",
     parameters: [
       {
         name: "categoryId",
@@ -18,12 +17,11 @@ export const agentTools = [
   },
   {
     function_name: "add_item_to_order",
-    fn: (itemId: string, quantity: number) => {
-      return `${window.kioskStore.addItemToOrder(itemId, quantity)} you have added ${quantity} of ${itemId} to your order.`;
+    fn: (itemId: string, quantity: number, categoryId: string | null) => {
+      console.log("Item ordered", itemId);
+      return `${window.kioskStore.currentCategory !== categoryId && categoryId != null && window.kioskStore.selectCategory(categoryId)}${window.kioskStore.addItemToOrder(itemId, quantity)}`;
     },
-    description: `
-        This function should be called when the user selects an item from a category (e.g., a sandwich, drink, or sauce).
-      `,
+    description: "This function should be called when the user selects an item from a category (e.g., a sandwich, drink, or sauce).",
     parameters: [
       {
         name: "itemId",
@@ -35,8 +33,13 @@ export const agentTools = [
         type: "number",
         description: "The quantity of the item to add to the order.",
       },
+      {
+        name: "categoryId",
+        type: "string",
+        description: "The ID of the category of the item.",
+      },
     ],
-    required: ["itemId", "quantity"],
+    required: ["itemId", "quantity", "categoryId"],
   },
   {
     function_name: "edit_item_in_order",
@@ -79,62 +82,48 @@ export const agentTools = [
   },
   {
     function_name: "show_order_summary",
-    fn: window.kioskStore.showOrderSummary,
-    description: `
-        Generates a summary of the current order, displaying the total cost.
-        - **Usage:** Call this function when the user requests a review of their order or asks for the total price.
-        - **Edge Cases:** Ensure that the summary reflects all the latest updates, including edited or removed items.
-      `,
+    fn: () => {
+      return `This is summary is: ${window.kioskStore.showOrderSummary()} `;
+    },
+    description: "Shows the summary of the order and the total amount",
     parameters: [],
     required: [],
   },
   {
     function_name: "cancel_order",
-    fn: window.kioskStore.cancelOrder,
-    description: `
-        Cancels the current order and resets all state, including selected categories and combo steps.
-        - **Usage:** Call this when the user wants to cancel their entire order.
-        - **Edge Cases:** Ensure all selections and states are cleared so that the system is ready for a new order without leftover data.
-      `,
+    fn: () => {
+      return `${window.kioskStore.cancelOrder()} Order was cancelled`;
+    },
+    description: "Cancels the current order and resets all state, including selected categories and combo steps.",
     parameters: [],
     required: [],
   },
   {
-    function_name: "reset_state",
-    fn: window.kioskStore.resetState,
-    description: `
-        Fully resets the entire kiosk state, clearing all selections and orders.
-        - **Usage:** Call this when the user wants to start fresh.
-        - **Edge Cases:** Warn the user that all selections and data will be cleared if they confirm a reset.
-      `,
+    function_name: "reset_order_and_start_new_order",
+    fn: () => {
+      return `${window.kioskStore.resetState()} The order has started over`;
+    },
+    description: "Reset the current order and start new order",
     parameters: [],
     required: [],
   },
   {
-    function_name: "start_combo_order",
-    fn: window.kioskStore.startComboOrder,
-    description: `
-        Initiates a combo meal order by starting at the first step of the combo process (e.g., choosing a sandwich).
-        - **Usage:** Call this function when the user selects a combo meal.
-        - **Edge Cases:** Ensure the combo exists. If the user starts a new combo while another is incomplete, reset the current combo before starting a new one.
-      `,
-    parameters: [
-      {
-        name: "comboId",
-        type: "string",
-        description: "The ID of the combo meal to start.",
-      },
-    ],
-    required: ["comboId"],
+    function_name: "start_combo_meal",
+    fn: () => {
+      window.kioskStore.startComboOrder();
+      return `You're in the combo`;
+    },
+    description: "Starts a new combo meal order",
+    parameters: [],
+    required: [],
   },
   {
     function_name: "next_combo_step",
-    fn: window.kioskStore.nextComboStep,
-    description: `
-        Moves to the next step in the combo meal selection process (e.g., from sandwich to fries).
-        - **Usage:** Call this function after an item is selected in the current step to proceed to the next one.
-        - **Edge Cases:** Ensure the user has made a valid selection before advancing. If this is the final step, the combo is completed.
-      `,
+    fn: () => {
+      window.kioskStore.nextComboStep();
+      return "Now what?";
+    },
+    description: "Moves to the next step in the combo meal selection process (e.g., from sandwich to fries).",
     parameters: [],
     required: [],
   },
