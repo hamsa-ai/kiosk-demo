@@ -4,7 +4,6 @@ import { useKioskStore } from "@/store/kioskStore";
 import Counter from "./Counter";
 import { cn, getItemImage } from "@/lib/utils";
 import EmptyCart from "@assets/vectors/empty-cart.svg";
-import useVoiceAgent from "@/voice-agent/useVoiceAgent";
 import type { OrderItem } from "@/store/slices/orderSlice";
 
 /**
@@ -68,14 +67,12 @@ const Cart: React.FC = () => {
   const showOrderSummary = useKioskStore((state) => state.showOrderSummary);
   const completeOrder = useKioskStore((state) => state.completeOrder);
   const { total, itemsTotal, deliveryCost } = showOrderSummary();
-  const { endAgent } = useVoiceAgent();
 
   /**
    * Handles the "Complete order" button click.
    */
   const handleCompleteOrderClick = () => {
     completeOrder();
-    endAgent();
   };
 
   return (

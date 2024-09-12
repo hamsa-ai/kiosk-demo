@@ -48,7 +48,7 @@ const ItemAndCartScreen: React.FC = () => {
           <ItemList
             items={items ?? []}
             title={currentCategory?.name || ""}
-            discount={undefined}
+            discount={currentCategory?.discount}
           />
         </div>
       </div>

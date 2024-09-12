@@ -172,7 +172,7 @@ describe("Kiosk Store Flow", () => {
       store.editItemInOrder(moltenCakeItem.id, 2);
     });
     updatedState = getUpdatedState();
-    expect(updatedState.currentOrder[0].quantity).toBe(2);
+    expect(updatedState.currentOrder[1].quantity).toBe(2);
 
     // Remove French Fries from the order
     act(() => {

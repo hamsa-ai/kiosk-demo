@@ -33,6 +33,12 @@ const CategoryCard: React.FC<{
       <p className="text-center font-baloo2 font-bold text-[14.74px]">
         {category.name}
       </p>
+      {/* Discount Badge */}
+      {category.discount && (
+        <span className="rounded-full bg-lightGreen px-2 font-baloo2 font-semibold text-black text-sm">
+          {`${category.discount} off`}
+        </span>
+      )}
     </button>
   );
 };
@@ -57,7 +63,9 @@ const CategoryList: React.FC = () => {
 
   return (
     <div className="grid grid-cols-3 gap-5 bg-transparent p-4">
-      <div className="-top-2 radial-gradient absolute right-0 h-[316.28px] w-[316.28px] p-4" />
+      <div className="radial-gradient absolute top-[30px] right-0 h-[316.28px] w-[316.28px] p-4" />
+      <div className="radial-gradient absolute top-[30px] right-0 h-[316.28px] w-[316.28px] p-4" />
+
       {menuData.categories.map((category: Category) => (
         <CategoryCard
           key={category.id}

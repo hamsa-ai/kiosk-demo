@@ -1,6 +1,5 @@
 import type { Category } from "./types";
 
-import comboMealImage from "@assets/images/comboMeal.png";
 import beefBurgerImage from "@assets/images/beef-burger.webp";
 import chickenBurgerImage from "@assets/images/chicken-burger.webp";
 import cheeseBurgerImage from "@assets/images/cheese-burger.webp";
@@ -44,8 +43,9 @@ export const menuData: { categories: Category[] } = {
       id: "burgers",
       name: "Burgers",
       nameArabic: "برغر",
-      image: comboMealImage,
+      image: beefBurgerImage,
       backgroundColor: "#97DE00",
+      discount: "20%",
       items: [
         {
           id: "beef_burger",

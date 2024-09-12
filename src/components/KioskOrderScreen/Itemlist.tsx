@@ -171,7 +171,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, title, discount }) => {
             animate={{ scale: 1 }}
             transition={{ duration: 0.4 }}
           >
-            {discount}
+            {`${discount} off`}
           </motion.span>
         )}
       </div>
