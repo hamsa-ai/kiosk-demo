@@ -27,11 +27,13 @@ describe("OrderSlice", () => {
     id: "beef_burger",
     name: "Beef Burger",
     price: 5.5,
+    calories: 450,
   };
   const frenchFriesItem = getMenuItemObject("french_fries") || {
     id: "french_fries",
     name: "French Fries",
     price: 2.5,
+    calories: 200,
   };
 
   /**
@@ -60,6 +62,7 @@ describe("OrderSlice", () => {
       name: beefBurgerItem.name,
       price: beefBurgerItem.price,
       quantity: 1,
+      calories: beefBurgerItem.calories,
     });
   });
 
@@ -75,8 +78,8 @@ describe("OrderSlice", () => {
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);
-    expect(updatedState.currentOrder[0].name).toBe(beefBurgerItem.name);
-    expect(updatedState.currentOrder[1].name).toBe(frenchFriesItem.name);
+    expect(updatedState.currentOrder[1].name).toBe(beefBurgerItem.name);
+    expect(updatedState.currentOrder[0].name).toBe(frenchFriesItem.name);
   });
 
   /**
@@ -169,7 +172,20 @@ describe("OrderSlice", () => {
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(2);
-    expect(updatedState.currentOrder[0].quantity).toBe(2);
-    expect(updatedState.currentOrder[1].quantity).toBe(3);
+    expect(updatedState.currentOrder[1].quantity).toBe(2);
+    expect(updatedState.currentOrder[0].quantity).toBe(3);
+  });
+  /**
+   * Scenario: Removing Item when Quantity is Set to 0
+   * This test checks that the item is removed from the order when its quantity is set to 0.
+   */
+  it("should remove item when quantity is set to 0", () => {
+    const state = getUpdatedState();
+
+    state.addItemToOrder(beefBurgerItem.id, 1); // Add the item first
+    state.addItemToOrder(beefBurgerItem.id, 0); // Now set quantity to 0
+
+    const updatedState = getUpdatedState();
+    expect(updatedState.currentOrder).toHaveLength(0); // The item should be removed
   });
 });

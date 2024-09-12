@@ -5,6 +5,7 @@ export interface Category {
   backgroundColor: string;
   image: string;
   items: Item[];
+  discount?: string;
 }
 
 export interface Item {

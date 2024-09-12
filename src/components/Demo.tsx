@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import Kiosk from "@assets/images/kiosk.png";
 import KioskOrderScreen from "./KioskOrderScreen/KioskOrderScreen";
 import { useKioskStore } from "@/store/kioskStore";
@@ -6,7 +6,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Mascot from "./KioskOrderScreen/Mascot";
 import FoodImage from "@assets/images/food.png";
 import { cn } from "@/lib/utils";
-import useVoiceAgent from "@/voice-agent/useVoiceAgent";
 import { BorderBeam } from "./magicui/border-beam";
 
 interface MascotAndFoodProps {
@@ -40,7 +39,7 @@ const MascotAndFood: React.FC<MascotAndFoodProps> = memo(
           }}
         >
           {!isCompleted ? (
-            <Mascot className="-right-[330px] relative top-[150px] h-[701.85px] w-[720.28px]" />
+            <Mascot className="-right-[330px] relative top-[130px] h-[701.85px] w-[720.28px]" />
           ) : (
             <Mascot
               className="-top-[200px] relative right-[200px] h-[604.54px] w-[620.02px]"
@@ -52,23 +51,17 @@ const MascotAndFood: React.FC<MascotAndFoodProps> = memo(
     ),
 );
 
+interface DemoProps {
+  isOpen: boolean;
+}
 // Main Demo component
-const Demo: React.FC = () => {
-  const { startAgent } = useVoiceAgent();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+const Demo: React.FC<DemoProps> = ({ isOpen }) => {
   const { currentCategory, isCompleted } = useKioskStore((state) => ({
     currentCategory: state.currentCategory,
     isCompleted: state.isCompleted,
   }));
 
   const isCategoryList: boolean = !currentCategory;
-
-  const handleIpadClick = (): void => {
-    if (!isOpen) {
-      setIsOpen(true);
-      startAgent();
-    }
-  };
 
   return (
     <div
@@ -90,9 +83,8 @@ const Demo: React.FC = () => {
       </AnimatePresence>
       <div className="relative z-20 flex w-full items-center justify-center">
         <motion.div
-          className={cn("ipad-wrapper max-w-[970px] cursor-pointer")}
-          onClick={handleIpadClick}
-          animate={{ x: isOpen ? 0 : "67%" }}
+          className={cn("ipad-wrapper max-w-[970px]")}
+          animate={{ x: isOpen ? 0 : "68%" }}
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
         >
           {!isOpen && (
@@ -116,7 +108,7 @@ const Demo: React.FC = () => {
                 !isCategoryList && "hidden",
               )}
               initial={{ opacity: 0 }}
-              animate={{ x: isOpen ? "500px" : "-550px", opacity: 1 }}
+              animate={{ x: isOpen ? "500px" : "-560px", opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ type: "spring", stiffness: 100, damping: 20 }}
             >

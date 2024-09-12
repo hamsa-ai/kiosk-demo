@@ -6,14 +6,15 @@ import useVoiceAgent from "@/voice-agent/useVoiceAgent";
 const OrderCompletionScreen: React.FC = () => {
   const { startAgent } = useVoiceAgent();
   const resetOrder = useKioskStore((state) => state.resetOrder);
-  const { removeCategory } = useKioskStore((state) => ({
+  const { removeCategory, selectedLanguage } = useKioskStore((state) => ({
     removeCategory: state.removeCategory,
+    selectedLanguage: state.selectedLanguage,
   }));
 
   const handleNewOrderClick = () => {
     resetOrder(); // Resets the order and isCompleted flag
     removeCategory();
-    startAgent();
+    startAgent(selectedLanguage);
   };
 
   return (

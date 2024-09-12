@@ -1,13 +1,18 @@
-import { useState } from "react";
 import { HamsaVoiceAgent } from "@hamsa-ai/voice-agents-sdk";
 import { agentTools } from "./agent-tools";
 
 /**
- * The agent ID used for the Hamsa voice agent.
+ * The agent ID used for the Hamsa arabic voice agent.
  * @constant {string}
  */
-const AGENT_ID = "20664578-ba51-4362-b782-46f785344519";
+const ARABIC_AGENT_ID = "20664578-ba51-4362-b782-46f785344519";
 
+/**
+ * The agent ID used for the Hamsa english voice agent.
+ * @constant {string}
+ */
+
+const ENGLISH_AGENT_ID = "76252fd2-a1a2-47df-9812-7067e842c228";
 /**
  * The API key used for the Hamsa voice agent.
  * @constant {string}
@@ -18,7 +23,7 @@ const API_KEY = "8295c84d-195c-4057-9eb6-e9d42f923538";
  * Instance of the Hamsa voice agent.
  * @constant {HamsaVoiceAgent}
  */
-const agent = new HamsaVoiceAgent(API_KEY);
+export const agent = new HamsaVoiceAgent(API_KEY);
 
 // TODO: WORK ON THE TYPE SAFETY OF THIS (take the types from the SDK)
 interface HamsaVoiceAgentParams {
@@ -34,7 +39,6 @@ interface HamsaVoiceAgentParams {
  * @constant {HamsaVoiceAgentParams}
  */
 const agentParams: HamsaVoiceAgentParams = {
-  agentId: AGENT_ID,
   voiceEnablement: true,
   tools: agentTools,
   params: {
@@ -98,29 +102,27 @@ const agentParams: HamsaVoiceAgentParams = {
  * Custom hook to manage the state and functionality of the Hamsa voice agent.
  *
  * @returns {{
- *  isAgentRunning: boolean;
- *  startAgent: () => void;
+ *  startAgent: (language: "ar" | "en") => void;
  *  endAgent: () => void;
- *  restartAgent: () => void;
  * }}
  */
 const useVoiceAgent = () => {
-  const [isAgentRunning, setIsAgentRunning] = useState<boolean>(false);
-
   /**
    * Starts the voice agent.
    * Logs an error message if the agent fails to start.
    */
-  const startAgent = (): void => {
+  const startAgent = (language: "ar" | "en"): void => {
     try {
-      agent.start(agentParams);
+      agent.start({
+        ...agentParams,
+        agentId: language === "ar" ? ARABIC_AGENT_ID : ENGLISH_AGENT_ID,
+      });
       agent.on("transcriptionReceived", (text) => {
         console.log("User speech transcription received", text);
       });
       agent.on("answerReceived", (text) => {
         console.log("Agent answer received", text);
       });
-      setIsAgentRunning(true);
       console.log("Agent started successfully");
     } catch (error) {
       console.error("Failed to start agent:", error);
@@ -134,23 +136,13 @@ const useVoiceAgent = () => {
   const endAgent = (): void => {
     try {
       agent.end();
-      setIsAgentRunning(false);
-      console.log("Agent paused successfully");
+      console.log("Agent ended successfully");
     } catch (error) {
       console.error("Failed to end agent:", error);
     }
   };
 
-  /**
-   * Restarts the voice agent by first ending it, then starting it again.
-   * Logs errors if the agent fails to end or start.
-   */
-  const restartAgent = (): void => {
-    endAgent();
-    startAgent();
-  };
-
-  return { isAgentRunning, startAgent, endAgent, restartAgent };
+  return { startAgent, endAgent };
 };
 
 export default useVoiceAgent;

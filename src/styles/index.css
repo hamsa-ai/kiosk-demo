@@ -85,12 +85,7 @@
 }
 
 .radial-gradient {
-	background: radial-gradient(
-		52.73% 52.73% at 50% 50%,
-		#ffffff 0%,
-		rgba(255, 255, 255, 0.726) 43.95%,
-		rgba(255, 255, 255, 0) 100%
-	);
+    background: radial-gradient(52.73% 52.73% at 50% 50%, #FFFFFF 0%, rgba(255, 255, 255, 1) 43.95%, rgba(255, 255, 255, 0) 100%)
 }
 
 .ipad-wrapper {

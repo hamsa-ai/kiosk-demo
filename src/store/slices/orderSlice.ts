@@ -1,6 +1,8 @@
 import { getMenuItemObject } from "@/lib/utils";
 import type { StateCreator } from "zustand";
 import type { Item } from "../types";
+import { agent } from "@/voice-agent/useVoiceAgent";
+const isTestEnv = process.env.NODE_ENV === "test";
 
 /**
  * Represents an item in the order.
@@ -102,8 +104,12 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    * @param quantity - The quantity to add.
    */
   addItemToOrder: (itemId: string, quantity: number) => {
-    if (quantity <= 0) {
+    if (quantity < 0) {
       console.log(`Quantity must be greater than 0. Skipping item ${itemId}.`);
+      return;
+    }
+    if (quantity === 0) {
+      get().removeItemFromOrder(itemId);
       return;
     }
     const item = getMenuItemObject(itemId);
@@ -116,10 +122,7 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
       (orderItem) => orderItem.id === itemId,
     );
 
-    if (!itemInOrder) {
-      set({ cloneItem: item });
-    }
-    setTimeout(() => {
+    const setCurrentOrder = () => {
       set((state) => {
         const existingItemIndex = state.currentOrder.findIndex(
           (orderItem) => orderItem.id === itemId,
@@ -141,10 +144,22 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
           quantity,
           calories: item.calories,
         };
-
         return { currentOrder: [newOrderItem, ...state.currentOrder] };
       });
-      if (!itemInOrder) {
+    };
+
+    if (isTestEnv) {
+      setCurrentOrder();
+      return;
+    }
+
+    if (!itemInOrder) {
+      set({ cloneItem: item });
+    }
+
+    setTimeout(() => {
+      setCurrentOrder();
+      if (!itemInOrder && get().cloneItem !== null) {
         set({ cloneItem: null });
       }
     }, 100);
@@ -221,6 +236,11 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    * @returns An object containing the items in the completed order and the total price.
    */
   completeOrder: () => {
+    // End the agent on complete order in non-test environments
+    if (!isTestEnv) {
+      agent.end();
+    }
+
     const orderSummary = get().showOrderSummary();
     set({ isCompleted: true, currentOrder: [] });
     return orderSummary;

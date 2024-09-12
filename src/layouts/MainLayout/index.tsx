@@ -7,9 +7,16 @@ import Body from "@/components/Body";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import Footer from "@/components/Footer";
 import ExitButton from "@/components/ExitButton";
+import useVoiceAgent from "@/voice-agent/useVoiceAgent";
+import { useKioskStore } from "@/store/kioskStore";
 
 const MainLayout: React.FC = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { startAgent } = useVoiceAgent();
+  const { selectLanguage } = useKioskStore((state) => ({
+    selectLanguage: state.selectLanguage,
+  }));
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -21,6 +28,12 @@ const MainLayout: React.FC = () => {
 
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
+
+  const handleDemoStart = (language: "ar" | "en") => {
+    setIsOpen(true);
+    selectLanguage(language);
+    startAgent(language);
+  };
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#E8F0F9]">
@@ -43,7 +56,7 @@ const MainLayout: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <Body />
+          <Body handleDemoStart={handleDemoStart} />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -59,7 +72,7 @@ const MainLayout: React.FC = () => {
         transition={{ duration: 1.5, delay: 1 }}
         className="absolute inset-0"
       >
-        <Demo />
+        <Demo isOpen={isOpen} />
       </motion.div>
 
       <AnimatePresence>
