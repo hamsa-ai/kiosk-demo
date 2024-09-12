@@ -94,7 +94,7 @@ const Cart: React.FC = () => {
       {currentOrder.length > 0 ? (
         <>
           <motion.div
-            className="flex-grow space-y-3 overflow-auto px-5 py-2"
+            className="scrollbar-none z-[50] max-h-[270px] flex-grow space-y-3 overflow-auto px-5 py-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{
@@ -114,7 +114,7 @@ const Cart: React.FC = () => {
               />
             ))}
           </motion.div>
-          <div className="px-6 pb-6">
+          <div className="mt-auto px-6 pb-6">
             <motion.p
               className="font-baloo2 font-bold text-[24.33px] text-black"
               initial={{ opacity: 0 }}
