@@ -142,7 +142,7 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
           calories: item.calories,
         };
 
-        return { currentOrder: [...state.currentOrder, newOrderItem] };
+        return { currentOrder: [newOrderItem, ...state.currentOrder] };
       });
       if (!itemInOrder) {
         set({ cloneItem: null });
