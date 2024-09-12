@@ -7,6 +7,7 @@ import Mascot from "./KioskOrderScreen/Mascot";
 import FoodImage from "@assets/images/food.png";
 import { cn } from "@/lib/utils";
 import useVoiceAgent from "@/voice-agent/useVoiceAgent";
+import { BorderBeam } from "./magicui/border-beam";
 
 interface MascotAndFoodProps {
   isCategoryList: boolean;
@@ -16,7 +17,7 @@ interface MascotAndFoodProps {
 const MascotAndFood: React.FC<MascotAndFoodProps> = memo(
   ({ isCategoryList, isCompleted }) =>
     !isCategoryList && (
-      <div className="-bottom-[250px] absolute z-10 flex w-full justify-between">
+      <div className="-bottom-[280px] absolute z-10 flex w-full items-center justify-between">
         <motion.img
           layoutId="food-poster-image"
           src={FoodImage}
@@ -39,7 +40,7 @@ const MascotAndFood: React.FC<MascotAndFoodProps> = memo(
           }}
         >
           {!isCompleted ? (
-            <Mascot className="-right-[330px] relative top-[125px] h-[701.85px] w-[720.28px]" />
+            <Mascot className="-right-[330px] relative top-[150px] h-[701.85px] w-[720.28px]" />
           ) : (
             <Mascot
               className="-top-[200px] relative right-[200px] h-[604.54px] w-[620.02px]"
@@ -83,7 +84,7 @@ const Demo: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="absolute inset-0 z-10 bg-white bg-opacity-50"
+            className="absolute inset-0 z-10 bg-white bg-opacity-60"
           />
         )}
       </AnimatePresence>
@@ -94,11 +95,19 @@ const Demo: React.FC = () => {
           animate={{ x: isOpen ? 0 : "67%" }}
           transition={{ type: "spring", stiffness: 100, damping: 20 }}
         >
+          {!isOpen && (
+            <div className="border-beam-container">
+              <BorderBeam borderWidth={9} className="rounded-[50px]" />
+            </div>
+          )}
+
+          {/* iPad Content */}
           <div
             className={cn(
               "flex items-center justify-center rounded-[3rem]",
               !isOpen && "pointer-events-none",
             )}
+            id="ipad-content"
           >
             <KioskOrderScreen />
             <motion.div
@@ -106,21 +115,10 @@ const Demo: React.FC = () => {
                 "absolute z-30 flex items-center justify-center",
                 !isCategoryList && "hidden",
               )}
-              initial={{
-                opacity: 0,
-              }}
-              animate={{
-                x: isOpen ? "500px" : "-550px",
-                opacity: 1,
-              }}
-              exit={{
-                opacity: 0,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 100,
-                damping: 20,
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ x: isOpen ? "500px" : "-550px", opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20 }}
             >
               <img
                 src={Kiosk}
@@ -129,6 +127,7 @@ const Demo: React.FC = () => {
               />
             </motion.div>
           </div>
+
           <MascotAndFood
             isCategoryList={isCategoryList}
             isCompleted={isCompleted}
