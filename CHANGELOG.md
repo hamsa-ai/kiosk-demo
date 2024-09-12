@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.5...v0.0.6) (2024-09-12)
+
+
+### Features
+
+* added border beam to ipad ([eaf792c](https://github.com/hamsa-ai/kiosk-demo/commit/eaf792cd3500e06a68b130fdda364f0d77afa021))
+* added complete order and go to main menu agent tools ([a5787a7](https://github.com/hamsa-ai/kiosk-demo/commit/a5787a7ad5bbb81a43ea80d68697e91a0ceb6c45))
+* demo enhancments ([0ad9072](https://github.com/hamsa-ai/kiosk-demo/commit/0ad9072ba5dcf62298baf034a08e6a757e591019))
+* update favicon and title ([489aacc](https://github.com/hamsa-ai/kiosk-demo/commit/489aacc0f8bc6319989b543c3f395d6fe0213bfd))
+
+
+### Bug Fixes
+
+* fix cart items scroll ([adcbec6](https://github.com/hamsa-ai/kiosk-demo/commit/adcbec6eefe0b8d69707df1a69cb1196859cdada))
+* remove debug logs and remove the window interface extending logic ([05dafb4](https://github.com/hamsa-ai/kiosk-demo/commit/05dafb46dde9d9ceb02f78b314c51e1c1e4c1863))
+* remove useless import ([8fc17a3](https://github.com/hamsa-ai/kiosk-demo/commit/8fc17a3610bc56829a54c0a0162a7fde2bafb0f8))
+
 ### [0.0.5](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.4...v0.0.5) (2024-09-11)
 
 
