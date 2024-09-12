@@ -18,34 +18,32 @@ const Body: React.FC<BodyProps> = ({ handleDemoStart }) => {
       <p className="font-normal text-[23.25px]">
         Just speak your order and enjoy a hassle-free meal at Hamsa Bite!
       </p>
-      <div className="mt-2 flex items-center justify-start gap-4">
+      <motion.div
+        className="mt-2 flex items-center justify-start gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8, delay: 1.5 }}
+      >
         <motion.button
           type="button"
-          className="h-[45px] w-[98px] rounded-full bg-limeGreen2 font-baloo2 text-[15px] text-black"
+          className="h-[45px] w-[130px] rounded-full bg-limeGreen2 font-baloo2 text-[15px] text-black"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, delay: 1.5 }}
           onClick={() => handleDemoStart("en")}
         >
-          {"English"}
+          {"Try in English"}
         </motion.button>
         <motion.button
           type="button"
-          className="h-[45px] w-[98px] rounded-full bg-black font-baloo2 text-[15px] text-white "
+          className="h-[45px] w-[130px] rounded-full bg-black font-sans text-[15px] text-white "
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, delay: 1.5 }}
           onClick={() => handleDemoStart("ar")}
         >
-          {"العربية"}
+          {"جرب الان بالعربية"}
         </motion.button>
-      </div>
+      </motion.div>
     </div>
   );
 };
