@@ -151,13 +151,15 @@ describe("OrderSlice", () => {
   it("should handle an empty order correctly", () => {
     const state = getUpdatedState();
 
+    // Verify the order summary is empty
     const summary = state.showOrderSummary();
     expect(summary.items).toHaveLength(0);
     expect(summary.itemsTotal).toBe(0);
 
-    const completedOrder = state.completeOrder();
-    expect(completedOrder.items).toHaveLength(0);
-    expect(completedOrder.itemsTotal).toBe(0);
+    // Expect an error when attempting to complete an empty order
+    expect(() => {
+      state.completeOrder();
+    }).toThrow("Error: Cannot complete an empty order.");
   });
 
   /**
@@ -183,7 +185,7 @@ describe("OrderSlice", () => {
     const state = getUpdatedState();
 
     state.addItemToOrder(beefBurgerItem.id, 1); // Add the item first
-    state.addItemToOrder(beefBurgerItem.id, 0); // Now set quantity to 0
+    state.removeItemFromOrder(beefBurgerItem.id); // Now set quantity to 0
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toHaveLength(0); // The item should be removed
