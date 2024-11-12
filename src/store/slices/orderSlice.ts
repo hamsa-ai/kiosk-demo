@@ -104,28 +104,22 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    * @param quantity - The quantity to add.
    */
   addItemToOrder: (itemId: string, quantity: number) => {
-    if (quantity < 0) {
-      console.log(`Quantity must be greater than 0. Skipping item ${itemId}.`);
-      return;
-    }
-    if (quantity === 0) {
-      get().removeItemFromOrder(itemId);
-      return;
+    if (quantity <= 0) {
+      throw new Error("Error: Quantity must be greater than 0.");
     }
     const item = getMenuItemObject(itemId);
     if (!item) {
-      console.log(`Item with id ${itemId} not found.`);
-      return;
+      throw new Error(`Error: Item with id ${itemId} not found.`);
     }
 
-    const itemInOrder = !!get().currentOrder.find(
-      (orderItem) => orderItem.id === itemId,
+    const existingItem = get().currentOrder.find(
+      (orderItem) => orderItem.id === itemId
     );
 
     const setCurrentOrder = () => {
       set((state) => {
         const existingItemIndex = state.currentOrder.findIndex(
-          (orderItem) => orderItem.id === itemId,
+          (orderItem) => orderItem.id === itemId
         );
 
         if (existingItemIndex !== -1) {
@@ -153,16 +147,17 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
       return;
     }
 
-    if (!itemInOrder) {
+    if (!existingItem) {
       set({ cloneItem: item });
     }
 
     setTimeout(() => {
       setCurrentOrder();
-      if (!itemInOrder && get().cloneItem !== null) {
+      if (!existingItem && get().cloneItem !== null) {
         set({ cloneItem: null });
       }
     }, 100);
+
     console.log(`Added to order: ${quantity}x ${item.name}`);
   },
 
@@ -184,16 +179,29 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
   editItemInOrder: (itemId: string, quantity: number) => {
     const item = getMenuItemObject(itemId);
     if (!item) {
-      console.log(`Item with id ${itemId} not found.`);
-      return;
+      throw new Error(`Error: Item with id ${itemId} not found.`);
+    }
+
+    const existingOrderItem = get().currentOrder.find(
+      (orderItem) => orderItem.id === itemId
+    );
+
+    if (!existingOrderItem) {
+      throw new Error(`Error: Item with id ${itemId} not found in order.`);
+    }
+
+    if (quantity <= 0) {
+      throw new Error("Error: Quantity must be greater than 0.");
     }
 
     set((state) => ({
       currentOrder: state.currentOrder.map((orderItem) =>
-        orderItem.id === itemId ? { ...orderItem, quantity } : orderItem,
+        orderItem.id === itemId
+          ? { ...orderItem, quantity }
+          : orderItem
       ),
     }));
-    console.log(`Edited item in order: ${itemId}`);
+    console.log(`Edited item in order: ${itemId} to quantity ${quantity}`);
   },
 
   /**
@@ -201,9 +209,21 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    *
    * @param itemId - The ID of the item to remove.
    */
-  removeItemFromOrder: (itemId) => {
+  removeItemFromOrder: (itemId: string) => {
+    const existingOrderItem = get().currentOrder.find(
+      (orderItem) => orderItem.id === itemId
+    );
+
+    if (!existingOrderItem) {
+      throw new Error(
+        `Error: Item with id ${itemId} not found in order.`
+      );
+    }
+
     set((state) => ({
-      currentOrder: state.currentOrder.filter((item) => item.id !== itemId),
+      currentOrder: state.currentOrder.filter(
+        (item) => item.id !== itemId
+      ),
     }));
     console.log(`Removed item from order: ${itemId}`);
   },
@@ -211,13 +231,13 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
   /**
    * Generates a summary of the current order, including the total price.
    *
-   * @returns An object containing the items in the current order and the total price.
+   * @returns An object containing the items in the current order and the total price and delivery cost.
    */
   showOrderSummary: () => {
     const currentOrder = get().currentOrder;
     const itemsTotal = currentOrder.reduce(
       (sum, item) => sum + item.price * item.quantity,
-      0,
+      0
     );
     const deliveryCost = 0.5; // Fixed delivery cost, adjust as needed
     const total = itemsTotal + deliveryCost;
@@ -236,6 +256,11 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    * @returns An object containing the items in the completed order and the total price.
    */
   completeOrder: () => {
+    const currentOrder = get().currentOrder;
+    if (currentOrder.length === 0) {
+      throw new Error("Error: Cannot complete an empty order.");
+    }
+
     // End the agent on complete order in non-test environments
     if (!isTestEnv) {
       agent.end();
@@ -243,6 +268,7 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
 
     const orderSummary = get().showOrderSummary();
     set({ isCompleted: true, currentOrder: [] });
+    console.log("Order completed successfully.");
     return orderSummary;
   },
 
@@ -250,7 +276,13 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    * Cancels the current order and resets the order state.
    */
   cancelOrder: () => {
-    set({ currentOrder: [] });
+    const currentOrder = get().currentOrder;
+    if (currentOrder.length === 0) {
+      throw new Error("Error: No order to cancel.");
+    }
+
+    set({ currentOrder: [], isCompleted: false });
+    console.log("Order was cancelled.");
   },
 
   /**
@@ -258,5 +290,6 @@ export const createOrderSlice: StateCreator<OrderSlice> = (set, get) => ({
    */
   resetOrder: () => {
     set({ currentOrder: [], isCompleted: false });
+    console.log("Order has been reset.");
   },
 });

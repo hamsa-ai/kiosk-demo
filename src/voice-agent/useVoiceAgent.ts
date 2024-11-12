@@ -43,8 +43,6 @@ const agentParams: HamsaVoiceAgentParams = {
   tools: agentTools,
   params: {
     our_menu: `
-  ### Categories and Items:
-
   **Burgers (برغر)** (categoryId: burgers)
   - Beef Burger (برغر لحم) (itemId: beef_burger) - 450 calories - $5.50
   - Chicken Burger (برغر دجاج) (itemId: chicken_burger) - 400 calories - $5.00

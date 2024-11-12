@@ -214,10 +214,12 @@ describe("Kiosk Store Flow", () => {
   it("Scenario 5: Handling non-existent items", () => {
     const store = getUpdatedState();
 
-    // Try to add an item that doesn't exist
-    act(() => {
-      store.addItemToOrder("non_existent_item", 1);
-    });
+    // Try to add an item that doesn't exist and expect an error
+    expect(() => {
+      act(() => {
+        store.addItemToOrder("non_existent_item", 1);
+      });
+    }).toThrow("Error: Item with id non_existent_item not found.");
 
     const updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toEqual([]); // No items should be added
@@ -235,17 +237,23 @@ describe("Kiosk Store Flow", () => {
       store.selectCategory("burgers");
     });
 
-    // Try to add an item with zero quantity
-    act(() => {
-      store.addItemToOrder(beefBurgerItem.id, 0);
-    });
+    // Try to add an item with zero quantity and expect an error
+    expect(() => {
+      act(() => {
+        store.addItemToOrder(beefBurgerItem.id, 0);
+      });
+    }).toThrow("Error: Quantity must be greater than 0.");
+
     let updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toEqual([]); // No item should be added
 
-    // Try to add an item with negative quantity
-    act(() => {
-      store.addItemToOrder(beefBurgerItem.id, -2);
-    });
+    // Try to add an item with negative quantity and expect an error
+    expect(() => {
+      act(() => {
+        store.addItemToOrder(beefBurgerItem.id, -2);
+      });
+    }).toThrow("Error: Quantity must be greater than 0.");
+
     updatedState = getUpdatedState();
     expect(updatedState.currentOrder).toEqual([]); // No item should be added
   });
