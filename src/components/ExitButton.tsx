@@ -9,6 +9,9 @@ const ExitButton: React.FC = () => {
       type="button"
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95, x: -2 }}
+      onClick={()=> {
+        window.location.href = "https://tryhamsa.com/playground/";
+      }}
     >
       {/* Animated Span for Text */}
       <motion.span className="mx-1 font-baloo text-[13.5px]">Exit</motion.span>
