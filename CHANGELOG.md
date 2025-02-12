@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.7...v0.0.8) (2025-02-12)
+
+
+### Features
+
+* add redirect to playground on ExitButton click ([f01a118](https://github.com/hamsa-ai/kiosk-demo/commit/f01a1187f03d0e134352abfaa4b5cfc69a6ef0d5))
+* **order-slice, agent-tools:** implement exception-based error handling ([2090233](https://github.com/hamsa-ai/kiosk-demo/commit/2090233282d789f8356b817e0f9621fc512216c0))
+
 ### [0.0.7](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.6...v0.0.7) (2024-10-30)
 
 ### [0.0.6](https://github.com/hamsa-ai/kiosk-demo/compare/v0.0.5...v0.0.6) (2024-09-12)
