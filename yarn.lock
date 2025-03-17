@@ -548,10 +548,10 @@
   resolved "https://registry.yarnpkg.com/@evilmartians/lefthook/-/lefthook-1.7.14.tgz#3fce9d4c91c23232f02bab592ce914713880bb8d"
   integrity sha512-0FPRdmd7hIZXjTQKQjLnmqxx4xGRIM1oGN9pJ4PyI14tOqEAwstmLIbauqQpTVTj3MAPeylsQVXh9RGaq/F2/A==
 
-"@hamsa-ai/voice-agents-sdk@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/@hamsa-ai/voice-agents-sdk/-/voice-agents-sdk-0.2.3.tgz#c1402b90eeb0f2b0281ed8b5144b39524c5cfefe"
-  integrity sha512-09eh1AjCIoGZ0CwQG9exD59Vy8nIJqWQDp9e9H/7ZIeS6CyQu7duECSNJKa7CGFRhRvUsz53u41Ag+0ckC8TFA==
+"@hamsa-ai/voice-agents-sdk@^0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@hamsa-ai/voice-agents-sdk/-/voice-agents-sdk-0.2.4.tgz#326e5ea052e8f81d004c3cbd0f2ee60bb564269c"
+  integrity sha512-AkJB3E8nHaUEDBoYcBEHSE9qBBr26FSHu0mvf8vFjRnqlrvlji0bzzMNNMWobBvLXGpve0GibwjKffF5YEqTzQ==
   dependencies:
     events "^3.3.0"
 
